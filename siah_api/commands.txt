@@ -1,0 +1,255 @@
+==============================================================
+  SIAH API — COMANDOS DE SETUP E EXECUÇÃO
+==============================================================
+
+Este arquivo contém todos os comandos necessários para que
+outro desenvolvedor possa clonar, configurar e rodar o projeto.
+
+--------------------------------------------------------------
+PRÉ-REQUISITOS
+--------------------------------------------------------------
+
+Instale antes de começar:
+
+  1. .NET 8 SDK
+     https://dotnet.microsoft.com/en-us/download/dotnet/8.0
+     Verifique com: dotnet --version
+
+  2. Git
+     https://git-scm.com/downloads
+     Verifique com: git --version
+
+  3. (Opcional) JetBrains Rider ou Visual Studio 2022+
+
+--------------------------------------------------------------
+1. CLONAR O REPOSITÓRIO
+--------------------------------------------------------------
+
+  git clone <URL_DO_REPOSITORIO>
+  cd ApiFilmes/siah_api
+
+--------------------------------------------------------------
+2. CONFIGURAR AS CREDENCIAIS (OBRIGATÓRIO)
+--------------------------------------------------------------
+
+Crie o arquivo de configuração de desenvolvimento:
+
+  No macOS/Linux:
+    cp siah_api/appsettings.json siah_api/appsettings.Development.json
+
+  No Windows:
+    copy siah_api\appsettings.json siah_api\appsettings.Development.json
+
+Edite o arquivo siah_api/appsettings.Development.json e preencha:
+
+  {
+    "Supabase": {
+      "ConnectionString": "Host=db.XXXXXXXX.supabase.co;Database=postgres;Username=postgres;Password=SUA_SENHA;SSL Mode=Require;Trust Server Certificate=true"
+    },
+    "Jwt": {
+      "SecretKey": "SUA_CHAVE_SECRETA_DE_PELO_MENOS_32_CARACTERES"
+    }
+  }
+
+Consulte o arquivo local_int_db.txt para instrucoes completas
+sobre como obter a ConnectionString no painel do Supabase.
+
+IMPORTANTE: Nunca commite appsettings.Development.json com credenciais reais.
+Adicione ao .gitignore:
+
+  echo "appsettings.Development.json" >> .gitignore
+
+--------------------------------------------------------------
+3. GERAR UMA SECRET KEY PARA O JWT
+--------------------------------------------------------------
+
+  No macOS/Linux:
+    openssl rand -base64 32
+
+  No Windows PowerShell:
+    [Convert]::ToBase64String((1..32 | ForEach-Object { Get-Random -Maximum 256 }) -as [byte[]])
+
+--------------------------------------------------------------
+4. CRIAR AS TABELAS NO SUPABASE
+--------------------------------------------------------------
+
+Execute o SQL disponivel no arquivo local_int_db.txt
+no painel do Supabase em: Database > SQL Editor
+
+--------------------------------------------------------------
+5. RESTAURAR DEPENDÊNCIAS
+--------------------------------------------------------------
+
+  cd siah_api
+  dotnet restore
+
+--------------------------------------------------------------
+6. COMPILAR O PROJETO
+--------------------------------------------------------------
+
+  dotnet build
+
+--------------------------------------------------------------
+7. RODAR O PROJETO (DESENVOLVIMENTO)
+--------------------------------------------------------------
+
+  dotnet run --project siah_api
+
+  Ou a partir da pasta siah_api/siah_api:
+    dotnet run
+
+  A API estará disponível em:
+    http://localhost:5000
+    https://localhost:7000
+
+  Swagger UI:
+    http://localhost:5000/swagger
+    https://localhost:7000/swagger
+
+--------------------------------------------------------------
+8. RODAR EM UMA PORTA ESPECÍFICA
+--------------------------------------------------------------
+
+  dotnet run --urls "http://localhost:8080"
+
+--------------------------------------------------------------
+9. PUBLICAR PARA PRODUÇÃO
+--------------------------------------------------------------
+
+  dotnet publish -c Release -o ./publish
+
+  O conteúdo da pasta publish pode ser hospedado em:
+    - Azure App Service
+    - AWS Elastic Beanstalk
+    - Qualquer servidor com .NET Runtime 8.x instalado
+    - Docker (ver passo 10)
+
+--------------------------------------------------------------
+10. RODAR COM DOCKER (OPCIONAL)
+--------------------------------------------------------------
+
+Crie um arquivo Dockerfile na raiz do projeto:
+
+  FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+  WORKDIR /app
+  EXPOSE 8080
+
+  FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+  WORKDIR /src
+  COPY . .
+  RUN dotnet publish siah_api/siah_api.csproj -c Release -o /app/publish
+
+  FROM base AS final
+  WORKDIR /app
+  COPY --from=build /app/publish .
+  ENTRYPOINT ["dotnet", "siah_api.dll"]
+
+Comandos Docker:
+
+  docker build -t siah-api .
+  docker run -p 8080:8080 \
+    -e Supabase__ConnectionString="sua_connection_string" \
+    -e Jwt__SecretKey="sua_secret_key" \
+    siah-api
+
+--------------------------------------------------------------
+11. VARIÁVEIS DE AMBIENTE (ALTERNATIVA AO appsettings)
+--------------------------------------------------------------
+
+Em vez do appsettings.Development.json, você pode configurar
+via variáveis de ambiente diretamente no sistema:
+
+  No macOS/Linux:
+    export Supabase__ConnectionString="Host=..."
+    export Jwt__SecretKey="..."
+    dotnet run
+
+  No Windows PowerShell:
+    $env:Supabase__ConnectionString="Host=..."
+    $env:Jwt__SecretKey="..."
+    dotnet run
+
+--------------------------------------------------------------
+12. TESTAR A API
+--------------------------------------------------------------
+
+  Via Swagger UI:
+    Acesse http://localhost:5000/swagger
+    Clique em "Authorize" e insira o Bearer token após fazer login
+
+  Via curl (exemplo de login):
+    curl -X POST http://localhost:5000/auth/login \
+      -H "Content-Type: application/json" \
+      -d '{"cpf":"12345678900","senha":"sua_senha"}'
+
+  Via httpie:
+    http POST localhost:5000/auth/login cpf=12345678900 senha=sua_senha
+
+--------------------------------------------------------------
+RESUMO DE ROTAS DISPONÍVEIS
+--------------------------------------------------------------
+
+  Autenticacao:
+    POST /auth/register
+    POST /auth/login
+    POST /auth/logout
+    POST /auth/refresh
+
+  Pacientes (React Frontend):
+    POST /api/pacientes/cadastrar
+    POST /api/pacientes/reconhecer
+
+  Triagem (React Frontend):
+    POST /api/triagem/registrar
+
+  Biometria (Totem WinForms):
+    POST /api/biometria/cadastrar
+    POST /api/biometria/identificar
+    POST /api/usuarios
+
+  Perfil:
+    GET/PUT /profile
+    PATCH /profile/basic-info
+    PATCH/DELETE /profile/photo
+    DELETE /profile
+
+  Agendamentos:
+    GET/POST /appointments
+    GET /appointments/upcoming
+    GET/PATCH /appointments/{id}
+    DELETE /appointments/{id}/cancel
+
+  Medicos:
+    GET /doctors
+    GET /doctors/favorites
+    GET /doctors/{id}
+    GET /doctors/{id}/availability
+    GET /doctors/{id}/reviews
+    POST/DELETE /doctors/{id}/favorite
+
+  Especialidades:
+    GET /specialties
+    GET /specialties/{id}/doctors
+
+  Fila Digital:
+    POST /queue/validate-totem
+    GET /queue/my-ticket
+    GET /queue/status/{ticketId}
+    POST /queue/confirm-arrival
+
+  Historico:
+    GET /history/appointments
+    GET /history/appointments/{id}
+    GET /history/recent
+
+  Documentos:
+    GET /documents/certificates
+    GET /documents/certificates/{id}/pdf
+    GET /documents/exams
+    GET /documents/exams/{id}/result
+    GET /documents/prescriptions
+    GET /documents/prescriptions/active
+    GET /documents/search
+
+  Busca:
+    GET /search/doctors

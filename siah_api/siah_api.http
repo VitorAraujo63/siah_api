@@ -1,0 +1,6 @@
+@siah_api_HostAddress = http://localhost:5110
+
+GET {{siah_api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
