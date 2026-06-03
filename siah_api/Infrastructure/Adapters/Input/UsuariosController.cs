@@ -16,13 +16,14 @@ public class UsuariosController : ControllerBase
         _authUseCase = authUseCase;
     }
 
-    // documentacao.pdf
-    [HttpPost]
-    [ProducesResponseType(typeof(CadastrarUsuarioTotemResponse), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> CadastrarTotem([FromBody] CadastrarUsuarioTotemRequest request)
+    [HttpGet("{cpf}")]
+    [ProducesResponseType(typeof(CadastrarUsuarioTotemResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ObterUsuario(string cpf)
     {
-        var resultado = await _authUseCase.CadastrarUsuarioTotemAsync(request);
-        return StatusCode(StatusCodes.Status201Created, resultado);
+        var resultado = await _authUseCase.ObterUsuarioTotemPorCpfAsync(cpf);
+        if (resultado == null) return NotFound(new { erro = "Usuário não encontrado." });
+        
+        return Ok(resultado);
     }
 }

@@ -1,8 +1,6 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SiahApi.Application.DTOs.Fila;
 using SiahApi.Domain.Ports.Input;
-using System.Security.Claims;
 
 namespace SiahApi.Infrastructure.Adapters.Input;
 
@@ -18,9 +16,6 @@ public class FilaController : ControllerBase
         _filaUseCase = filaUseCase;
     }
 
-    private Guid UserId => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? Guid.Empty.ToString());
-
-    // SIAH_Especificacao_API_v1.docx
     [HttpPost("validate-totem")]
     [ProducesResponseType(typeof(EmitirSenhaResponse), StatusCodes.Status201Created)]
     public async Task<IActionResult> ValidarTotem([FromBody] ValidarTotemRequest request)
@@ -29,16 +24,17 @@ public class FilaController : ControllerBase
         return StatusCode(StatusCodes.Status201Created, resultado);
     }
 
-    // SIAH_Especificacao_API_v1.docx
     [HttpGet("my-ticket")]
-    [Authorize]
     [ProducesResponseType(typeof(SenhaAtivaResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> ObterSenhaAtiva()
+    public async Task<IActionResult> ObterSenhaAtiva([FromQuery] string cpf)
     {
+        if (string.IsNullOrWhiteSpace(cpf))
+            return BadRequest(new { erro = "O CPF é obrigatório." });
+
         try
         {
-            var resultado = await _filaUseCase.ObterSenhaAtivaAsync(UserId);
+            var resultado = await _filaUseCase.ObterSenhaAtivaAsync(cpf);
             return Ok(resultado);
         }
         catch (KeyNotFoundException ex)
@@ -47,11 +43,10 @@ public class FilaController : ControllerBase
         }
     }
 
-    // SIAH_Especificacao_API_v1.docx
-    [HttpGet("status/{ticketId:guid}")]
+    [HttpGet("status/{ticketId:long}")]
     [ProducesResponseType(typeof(StatusSenhaResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> ObterStatus(Guid ticketId)
+    public async Task<IActionResult> ObterStatus(long ticketId)
     {
         try
         {
@@ -64,13 +59,11 @@ public class FilaController : ControllerBase
         }
     }
 
-    // SIAH_Especificacao_API_v1.docx
     [HttpPost("confirm-arrival")]
-    [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> ConfirmarPresenca([FromBody] ConfirmarPresencaRequest request)
     {
-        await _filaUseCase.ConfirmarPresencaAsync(UserId, request.TicketId);
+        await _filaUseCase.ConfirmarPresencaAsync(request.TicketId);
         return Ok(new { mensagem = "Presença confirmada com sucesso." });
     }
 }

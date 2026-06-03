@@ -16,18 +16,14 @@ public class FilaUseCase : IFilaUseCase
 
     public async Task<EmitirSenhaResponse> ValidarTotemAsync(ValidarTotemRequest request)
     {
-        var posicao = await _filaRepository.ObterProximaPosicaoAsync(request.DepartmentId);
+        var posicao = await _filaRepository.ObterProximaPosicaoAsync(request.ServiceType);
         var tempoEspera = posicao * 7;
 
         var senha = new SenhaAtendimento
         {
-            IdPaciente = request.PatientId,
-            TotemId = request.TotemId,
-            TipoServico = request.ServiceType,
-            DepartamentoId = request.DepartmentId,
+            Cpf = request.PatientCpf,
             NumeroSenha = $"A-{posicao:D3}",
-            PosicaoNaFila = posicao,
-            TempoEsperaMinutos = tempoEspera,
+            Especialidade = request.ServiceType,
             Status = "waiting"
         };
 
@@ -40,47 +36,48 @@ public class FilaUseCase : IFilaUseCase
             {
                 TicketId = emitida.Id,
                 TicketNumber = emitida.NumeroSenha,
-                QueuePosition = emitida.PosicaoNaFila,
-                EstimatedWaitMinutes = emitida.TempoEsperaMinutos,
-                Department = emitida.DepartamentoId.ToString(),
-                IssuedAt = emitida.EmitidaEm
+                QueuePosition = posicao,
+                EstimatedWaitMinutes = tempoEspera,
+                IssuedAt = emitida.CreatedAt
             }
         };
     }
 
-    public async Task<SenhaAtivaResponse> ObterSenhaAtivaAsync(Guid userId)
+    public async Task<SenhaAtivaResponse> ObterSenhaAtivaAsync(string cpf)
     {
-        var senha = await _filaRepository.ObterSenhaAtivaPorUsuarioAsync(userId)
+        var senha = await _filaRepository.ObterSenhaAtivaPorUsuarioAsync(cpf)
             ?? throw new KeyNotFoundException("Nenhuma senha ativa encontrada.");
+
+        var posicao = await _filaRepository.ObterProximaPosicaoAsync(senha.Especialidade);
 
         return new SenhaAtivaResponse
         {
             TicketId = senha.Id,
             TicketNumber = senha.NumeroSenha,
-            Status = senha.Status,
-            QueuePosition = senha.PosicaoNaFila,
-            EstimatedWaitMinutes = senha.TempoEsperaMinutos,
-            CalledAt = senha.ChamadaEm,
-            Department = senha.DepartamentoId.ToString()
+            Status = senha.Status ?? "waiting",
+            QueuePosition = posicao,
+            EstimatedWaitMinutes = posicao * 7
         };
     }
 
-    public async Task<StatusSenhaResponse> ObterStatusAsync(Guid ticketId)
+    public async Task<StatusSenhaResponse> ObterStatusAsync(long ticketId)
     {
         var senha = await _filaRepository.ObterPorIdAsync(ticketId)
             ?? throw new KeyNotFoundException("Senha não encontrada.");
+
+        var posicao = await _filaRepository.ObterProximaPosicaoAsync(senha.Especialidade);
 
         return new StatusSenhaResponse
         {
             TicketId = senha.Id,
             TicketNumber = senha.NumeroSenha,
-            Status = senha.Status,
-            QueuePosition = senha.PosicaoNaFila,
-            EstimatedWaitMinutes = senha.TempoEsperaMinutos
+            Status = senha.Status ?? "waiting",
+            QueuePosition = posicao,
+            EstimatedWaitMinutes = posicao * 7
         };
     }
 
-    public async Task ConfirmarPresencaAsync(Guid userId, Guid ticketId)
+    public async Task ConfirmarPresencaAsync(long ticketId)
     {
         await _filaRepository.AtualizarStatusAsync(ticketId, "in_service");
     }

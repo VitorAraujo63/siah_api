@@ -8,7 +8,6 @@ namespace SiahApi.Infrastructure.Adapters.Input;
 
 [ApiController]
 [Route("doctors")]
-[Authorize]
 [Tags("Medicos")]
 public class MedicosController : ControllerBase
 {
@@ -18,8 +17,6 @@ public class MedicosController : ControllerBase
     {
         _medicoUseCase = medicoUseCase;
     }
-
-    private Guid UserId => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? Guid.Empty.ToString());
 
     // SIAH_Especificacao_API_v1.docx
     [HttpGet]
@@ -33,9 +30,9 @@ public class MedicosController : ControllerBase
     // SIAH_Especificacao_API_v1.docx
     [HttpGet("favorites")]
     [ProducesResponseType(typeof(IEnumerable<MedicoResponse>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> ListarFavoritos()
+    public async Task<IActionResult> ListarFavoritos([FromQuery] Guid userId)
     {
-        var resultado = await _medicoUseCase.ListarFavoritosAsync(UserId);
+        var resultado = await _medicoUseCase.ListarFavoritosAsync(userId);
         return Ok(resultado);
     }
 
@@ -77,18 +74,18 @@ public class MedicosController : ControllerBase
     // SIAH_Especificacao_API_v1.docx
     [HttpPost("{id:guid}/favorite")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> Favoritar(Guid id)
+    public async Task<IActionResult> Favoritar(Guid id, [FromQuery] Guid userId)
     {
-        await _medicoUseCase.FavoritarAsync(UserId, id);
+        await _medicoUseCase.FavoritarAsync(userId, id);
         return Ok(new { mensagem = "Médico adicionado aos favoritos." });
     }
 
     // SIAH_Especificacao_API_v1.docx
     [HttpDelete("{id:guid}/favorite")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> Desfavoritar(Guid id)
+    public async Task<IActionResult> Desfavoritar(Guid id, [FromQuery] Guid userId)
     {
-        await _medicoUseCase.DesfavoritarAsync(UserId, id);
+        await _medicoUseCase.DesfavoritarAsync(userId, id);
         return Ok(new { mensagem = "Médico removido dos favoritos." });
     }
 }

@@ -29,8 +29,8 @@ public class SupabaseTriagemRepository : ITriagemRepository
         await using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
             INSERT INTO triagens (id_usuario, queixa_principal, peso, altura, temperatura, pressao_arterial, frequencia_cardiaca)
-            VALUES (@id_usuario, @queixa_principal, @peso, @altura, @temperatura, @pressao_arterial, @frequencia_cardiaca)
-            RETURNING id, id_usuario, queixa_principal, peso, altura, temperatura, pressao_arterial, frequencia_cardiaca";
+            VALUES (@id_usuario, @queixa_principal, @peso::numeric, @altura::numeric, @temperatura, @pressao_arterial, @frequencia_cardiaca::int)
+            RETURNING id, id_usuario, queixa_principal, peso::text, altura::text, temperatura, pressao_arterial, frequencia_cardiaca::text";
 
         cmd.Parameters.AddWithValue("id_usuario", triagem.IdUsuario);
         cmd.Parameters.AddWithValue("queixa_principal", triagem.QueixaPrincipal);

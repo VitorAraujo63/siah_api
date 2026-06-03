@@ -5,20 +5,12 @@
 /Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/bin/Debug/net8.0/siah_api.runtimeconfig.json
 /Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/bin/Debug/net8.0/siah_api.dll
 /Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/bin/Debug/net8.0/siah_api.pdb
-/Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/bin/Debug/net8.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
 /Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/bin/Debug/net8.0/Microsoft.AspNetCore.OpenApi.dll
-/Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/bin/Debug/net8.0/Microsoft.IdentityModel.Abstractions.dll
-/Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/bin/Debug/net8.0/Microsoft.IdentityModel.JsonWebTokens.dll
-/Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/bin/Debug/net8.0/Microsoft.IdentityModel.Logging.dll
-/Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/bin/Debug/net8.0/Microsoft.IdentityModel.Protocols.dll
-/Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/bin/Debug/net8.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
-/Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/bin/Debug/net8.0/Microsoft.IdentityModel.Tokens.dll
 /Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/bin/Debug/net8.0/Microsoft.OpenApi.dll
 /Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/bin/Debug/net8.0/Npgsql.dll
 /Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/bin/Debug/net8.0/Swashbuckle.AspNetCore.Swagger.dll
 /Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/bin/Debug/net8.0/Swashbuckle.AspNetCore.SwaggerGen.dll
 /Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/bin/Debug/net8.0/Swashbuckle.AspNetCore.SwaggerUI.dll
-/Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/bin/Debug/net8.0/System.IdentityModel.Tokens.Jwt.dll
 /Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/obj/Debug/net8.0/siah_api.csproj.AssemblyReference.cache
 /Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/obj/Debug/net8.0/siah_api.GeneratedMSBuildEditorConfig.editorconfig
 /Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/obj/Debug/net8.0/siah_api.AssemblyInfoInputs.cache
@@ -40,3 +32,6 @@
 /Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/obj/Debug/net8.0/siah_api.pdb
 /Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/obj/Debug/net8.0/siah_api.genruntimeconfig.cache
 /Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/obj/Debug/net8.0/ref/siah_api.dll
+/Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/obj/Debug/net8.0/siah_api.sourcelink.json
+/Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/bin/Debug/net8.0/Microsoft.Extensions.Configuration.FileExtensions.dll
+/Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/bin/Debug/net8.0/Microsoft.Extensions.Configuration.Json.dll

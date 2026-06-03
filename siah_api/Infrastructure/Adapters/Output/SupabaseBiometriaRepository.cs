@@ -52,4 +52,17 @@ public class SupabaseBiometriaRepository : IBiometriaRepository
 
         return resultado;
     }
+
+    public async Task<(string Nome, byte[] Template)?> ObterTemplatePorCpfAsync(string cpf)
+    {
+        await using var conn = await _dataSource.OpenConnectionAsync();
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT nome, template_biometrico FROM usuarios WHERE cpf = @cpf AND template_biometrico IS NOT NULL LIMIT 1";
+        cmd.Parameters.AddWithValue("cpf", cpf);
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+        if (!await reader.ReadAsync()) return null;
+
+        return (reader.GetString(0), (byte[])reader[1]);
+    }
 }

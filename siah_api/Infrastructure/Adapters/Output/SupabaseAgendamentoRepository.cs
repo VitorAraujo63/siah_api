@@ -21,12 +21,10 @@ public class SupabaseAgendamentoRepository : IAgendamentoRepository
         await using var cmd = conn.CreateCommand();
 
         cmd.CommandText = @"
-            SELECT id, id_usuario, medico_id, especialidade_id, data, horario, observacoes,
-                   plano_id, status, numero_da_senha, motivo_cancelamento, tipo_cancelamento,
-                   reembolso_elegivel, cancelado_em
-            FROM agendamentos
+            SELECT id, id_usuario, id_profissional, data_consulta, motivo_consulta
+            FROM consultas
             WHERE id_usuario = @id_usuario
-            ORDER BY data DESC, horario DESC
+            ORDER BY data_consulta DESC
             LIMIT @per_page OFFSET @offset";
 
         cmd.Parameters.AddWithValue("id_usuario", userId);
@@ -47,12 +45,10 @@ public class SupabaseAgendamentoRepository : IAgendamentoRepository
         await using var cmd = conn.CreateCommand();
 
         cmd.CommandText = @"
-            SELECT id, id_usuario, medico_id, especialidade_id, data, horario, observacoes,
-                   plano_id, status, numero_da_senha, motivo_cancelamento, tipo_cancelamento,
-                   reembolso_elegivel, cancelado_em
-            FROM agendamentos
-            WHERE id_usuario = @id_usuario AND status = 'scheduled'
-            ORDER BY data ASC, horario ASC";
+            SELECT id, id_usuario, id_profissional, data_consulta, motivo_consulta
+            FROM consultas
+            WHERE id_usuario = @id_usuario AND data_consulta >= NOW()
+            ORDER BY data_consulta ASC";
 
         cmd.Parameters.AddWithValue("id_usuario", userId);
 
@@ -69,10 +65,8 @@ public class SupabaseAgendamentoRepository : IAgendamentoRepository
         await using var cmd = conn.CreateCommand();
 
         cmd.CommandText = @"
-            SELECT id, id_usuario, medico_id, especialidade_id, data, horario, observacoes,
-                   plano_id, status, numero_da_senha, motivo_cancelamento, tipo_cancelamento,
-                   reembolso_elegivel, cancelado_em
-            FROM agendamentos WHERE id = @id LIMIT 1";
+            SELECT id, id_usuario, id_profissional, data_consulta, motivo_consulta
+            FROM consultas WHERE id = @id LIMIT 1";
 
         cmd.Parameters.AddWithValue("id", agendamentoId);
 
@@ -89,8 +83,8 @@ public class SupabaseAgendamentoRepository : IAgendamentoRepository
 
         cmd.CommandText = @"
             SELECT NOT EXISTS(
-                SELECT 1 FROM agendamentos
-                WHERE medico_id = @medico_id AND data = @data AND horario = @horario AND status = 'scheduled'
+                SELECT 1 FROM consultas
+                WHERE id_profissional = @medico_id AND data_consulta::date = @data::date AND TO_CHAR(data_consulta, 'HH24:MI') = @horario
             )";
 
         cmd.Parameters.AddWithValue("medico_id", medicoId);
@@ -106,20 +100,14 @@ public class SupabaseAgendamentoRepository : IAgendamentoRepository
         await using var cmd = conn.CreateCommand();
 
         cmd.CommandText = @"
-            INSERT INTO agendamentos (id_usuario, medico_id, especialidade_id, data, horario, observacoes, plano_id, status)
-            VALUES (@id_usuario, @medico_id, @especialidade_id, @data, @horario, @observacoes, @plano_id, @status)
-            RETURNING id, id_usuario, medico_id, especialidade_id, data, horario, observacoes,
-                      plano_id, status, numero_da_senha, motivo_cancelamento, tipo_cancelamento,
-                      reembolso_elegivel, cancelado_em";
+            INSERT INTO consultas (id_usuario, id_profissional, id_hospital, data_consulta, motivo_consulta, diagnostico)
+            VALUES (@id_usuario, @medico_id, (SELECT id FROM hospitais LIMIT 1), @data_consulta::timestamp, @motivo_consulta, '')
+            RETURNING id, id_usuario, id_profissional, data_consulta, motivo_consulta";
 
         cmd.Parameters.AddWithValue("id_usuario", agendamento.IdUsuario);
         cmd.Parameters.AddWithValue("medico_id", agendamento.MedicoId);
-        cmd.Parameters.AddWithValue("especialidade_id", agendamento.EspecialidadeId);
-        cmd.Parameters.AddWithValue("data", agendamento.Data);
-        cmd.Parameters.AddWithValue("horario", agendamento.Horario);
-        cmd.Parameters.AddWithValue("observacoes", (object?)agendamento.Observacoes ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("plano_id", (object?)agendamento.PlanoId ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("status", agendamento.Status);
+        cmd.Parameters.AddWithValue("data_consulta", $"{agendamento.Data} {agendamento.Horario}");
+        cmd.Parameters.AddWithValue("motivo_consulta", (object?)agendamento.Observacoes ?? "Consulta de rotina");
 
         await using var reader = await cmd.ExecuteReaderAsync();
         await reader.ReadAsync();
@@ -132,40 +120,38 @@ public class SupabaseAgendamentoRepository : IAgendamentoRepository
         await using var cmd = conn.CreateCommand();
 
         cmd.CommandText = @"
-            UPDATE agendamentos SET
-                data = @data, horario = @horario, status = @status,
-                motivo_cancelamento = @motivo_cancelamento, tipo_cancelamento = @tipo_cancelamento,
-                reembolso_elegivel = @reembolso_elegivel, cancelado_em = @cancelado_em
+            UPDATE consultas SET
+                data_consulta = @data_consulta::timestamp,
+                motivo_consulta = @motivo_consulta
             WHERE id = @id";
 
         cmd.Parameters.AddWithValue("id", agendamento.Id);
-        cmd.Parameters.AddWithValue("data", agendamento.Data);
-        cmd.Parameters.AddWithValue("horario", agendamento.Horario);
-        cmd.Parameters.AddWithValue("status", agendamento.Status);
-        cmd.Parameters.AddWithValue("motivo_cancelamento", (object?)agendamento.MotivoCancelamento ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("tipo_cancelamento", (object?)agendamento.TipoCancelamento ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("reembolso_elegivel", agendamento.ReembolsoElegivel);
-        cmd.Parameters.AddWithValue("cancelado_em", (object?)agendamento.CanceladoEm ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("data_consulta", $"{agendamento.Data} {agendamento.Horario}");
+        cmd.Parameters.AddWithValue("motivo_consulta", (object?)agendamento.Observacoes ?? "Consulta de rotina");
 
         await cmd.ExecuteNonQueryAsync();
         return agendamento;
     }
 
-    private static Agendamento MapearAgendamento(NpgsqlDataReader reader) => new()
+    private static Agendamento MapearAgendamento(NpgsqlDataReader reader)
     {
-        Id = reader.GetGuid(0),
-        IdUsuario = reader.GetGuid(1),
-        MedicoId = reader.GetGuid(2),
-        EspecialidadeId = reader.GetGuid(3),
-        Data = reader.GetString(4),
-        Horario = reader.GetString(5),
-        Observacoes = reader.IsDBNull(6) ? null : reader.GetString(6),
-        PlanoId = reader.IsDBNull(7) ? null : reader.GetGuid(7),
-        Status = reader.GetString(8),
-        NumeroDaSenha = reader.IsDBNull(9) ? null : reader.GetInt32(9),
-        MotivoCancelamento = reader.IsDBNull(10) ? null : reader.GetString(10),
-        TipoCancelamento = reader.IsDBNull(11) ? null : reader.GetString(11),
-        ReembolsoElegivel = !reader.IsDBNull(12) && reader.GetBoolean(12),
-        CanceladoEm = reader.IsDBNull(13) ? null : reader.GetDateTime(13)
-    };
+        var dataConsulta = reader.GetDateTime(3);
+        return new Agendamento
+        {
+            Id = reader.GetGuid(0),
+            IdUsuario = reader.IsDBNull(1) ? Guid.Empty : reader.GetGuid(1),
+            MedicoId = reader.IsDBNull(2) ? Guid.Empty : reader.GetGuid(2),
+            EspecialidadeId = Guid.Empty, // Mock
+            Data = dataConsulta.ToString("yyyy-MM-dd"),
+            Horario = dataConsulta.ToString("HH:mm"),
+            Observacoes = reader.IsDBNull(4) ? null : reader.GetString(4),
+            PlanoId = null,
+            Status = dataConsulta > DateTime.UtcNow ? "scheduled" : "completed",
+            NumeroDaSenha = null,
+            MotivoCancelamento = null,
+            TipoCancelamento = null,
+            ReembolsoElegivel = false,
+            CanceladoEm = null
+        };
+    }
 }

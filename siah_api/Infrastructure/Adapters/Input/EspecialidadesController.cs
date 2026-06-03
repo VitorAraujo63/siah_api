@@ -7,7 +7,6 @@ namespace SiahApi.Infrastructure.Adapters.Input;
 
 [ApiController]
 [Route("specialties")]
-[Authorize]
 [Tags("Especialidades")]
 public class EspecialidadesController : ControllerBase
 {

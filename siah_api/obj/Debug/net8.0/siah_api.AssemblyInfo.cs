@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("siah_api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f41c4aab266d1ea2cd68a2404779929138c79469")]
 [assembly: System.Reflection.AssemblyProductAttribute("siah_api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("siah_api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

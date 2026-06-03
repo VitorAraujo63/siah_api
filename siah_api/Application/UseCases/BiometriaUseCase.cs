@@ -29,21 +29,23 @@ public class BiometriaUseCase : IBiometriaUseCase
     public async Task<IdentificarBiometriaResponse> IdentificarAsync(IdentificarBiometriaRequest request)
     {
         var digitalBytes = Convert.FromBase64String(request.DigitalCapturada);
-        var pacientes = await _biometriaRepository.ListarComTemplateBiometricoAsync();
+        var dadosPaciente = await _biometriaRepository.ObterTemplatePorCpfAsync(request.Cpf);
 
-        foreach (var paciente in pacientes)
+        if (dadosPaciente == null)
         {
-            if (VerificarCorrespondencia(digitalBytes, paciente.Template))
-            {
-                return new IdentificarBiometriaResponse
-                {
-                    Cpf = paciente.Cpf,
-                    Nome = paciente.Nome
-                };
-            }
+            throw new UnauthorizedAccessException("CPF não encontrado ou sem biometria cadastrada.");
         }
 
-        throw new UnauthorizedAccessException("Digital não reconhecida na base de dados.");
+        if (VerificarCorrespondencia(digitalBytes, dadosPaciente.Value.Template))
+        {
+            return new IdentificarBiometriaResponse
+            {
+                Cpf = request.Cpf,
+                Nome = dadosPaciente.Value.Nome
+            };
+        }
+
+        throw new UnauthorizedAccessException("Digital não reconhecida para este CPF.");
     }
 
     private static bool VerificarCorrespondencia(byte[] digitalConsulta, byte[] templateBanco)

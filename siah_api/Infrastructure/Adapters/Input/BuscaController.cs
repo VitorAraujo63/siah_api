@@ -7,7 +7,6 @@ namespace SiahApi.Infrastructure.Adapters.Input;
 
 [ApiController]
 [Route("search")]
-[Authorize]
 [Tags("Busca")]
 public class BuscaController : ControllerBase
 {

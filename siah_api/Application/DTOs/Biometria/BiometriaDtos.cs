@@ -8,6 +8,7 @@ public class CadastrarBiometriaRequest
 
 public class IdentificarBiometriaRequest
 {
+    public string Cpf { get; set; } = string.Empty;
     public string DigitalCapturada { get; set; } = string.Empty;
 }
 

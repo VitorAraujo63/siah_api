@@ -19,10 +19,10 @@ public class SupabaseDocumentoRepository : IDocumentoRepository
         await using var conn = await _dataSource.OpenConnectionAsync();
         await using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            SELECT id, id_usuario, tipo, titulo, conteudo, pdf_url, agendamento_id, ativo, criado_em
-            FROM documentos WHERE id_usuario = @id_usuario AND tipo = @tipo ORDER BY criado_em DESC";
+            SELECT id, id_usuario, tipo_exame, resultado_link, data_realizacao
+            FROM exames WHERE id_usuario = @id_usuario AND resultado_link IS NOT NULL
+            ORDER BY data_realizacao DESC";
         cmd.Parameters.AddWithValue("id_usuario", userId);
-        cmd.Parameters.AddWithValue("tipo", tipo);
 
         await using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
@@ -36,8 +36,8 @@ public class SupabaseDocumentoRepository : IDocumentoRepository
         await using var conn = await _dataSource.OpenConnectionAsync();
         await using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            SELECT id, id_usuario, tipo, titulo, conteudo, pdf_url, agendamento_id, ativo, criado_em
-            FROM documentos WHERE id = @id LIMIT 1";
+            SELECT id, id_usuario, tipo_exame, resultado_link, data_realizacao
+            FROM exames WHERE id = @id LIMIT 1";
         cmd.Parameters.AddWithValue("id", documentoId);
 
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -57,10 +57,10 @@ public class SupabaseDocumentoRepository : IDocumentoRepository
         await using var conn = await _dataSource.OpenConnectionAsync();
         await using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            SELECT id, id_usuario, tipo, titulo, conteudo, pdf_url, agendamento_id, ativo, criado_em
-            FROM documentos
-            WHERE id_usuario = @id_usuario AND (titulo ILIKE @termo OR conteudo ILIKE @termo)
-            ORDER BY criado_em DESC";
+            SELECT id, id_usuario, tipo_exame, resultado_link, data_realizacao
+            FROM exames
+            WHERE id_usuario = @id_usuario AND tipo_exame ILIKE @termo AND resultado_link IS NOT NULL
+            ORDER BY data_realizacao DESC";
         cmd.Parameters.AddWithValue("id_usuario", userId);
         cmd.Parameters.AddWithValue("termo", $"%{termo}%");
 
@@ -75,12 +75,12 @@ public class SupabaseDocumentoRepository : IDocumentoRepository
     {
         Id = reader.GetGuid(0),
         IdUsuario = reader.GetGuid(1),
-        Tipo = reader.GetString(2),
-        Titulo = reader.GetString(3),
-        Conteudo = reader.IsDBNull(4) ? null : reader.GetString(4),
-        PdfUrl = reader.IsDBNull(5) ? null : reader.GetString(5),
-        AgendamentoId = reader.IsDBNull(6) ? null : reader.GetGuid(6),
-        Ativo = reader.GetBoolean(7),
-        CriadoEm = reader.GetDateTime(8)
+        Tipo = "exame", // mock
+        Titulo = reader.GetString(2),
+        Conteudo = null,
+        PdfUrl = reader.IsDBNull(3) ? null : reader.GetString(3),
+        AgendamentoId = null,
+        Ativo = true,
+        CriadoEm = reader.GetDateTime(4)
     };
 }

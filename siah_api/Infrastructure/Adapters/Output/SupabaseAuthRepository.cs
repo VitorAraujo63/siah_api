@@ -27,8 +27,8 @@ public class SupabaseAuthRepository : IAuthRepository
         await using var conn = await _dataSource.OpenConnectionAsync();
         await using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            INSERT INTO usuarios (nome, cpf, email, telefone, data_nascimento, senha_hash)
-            VALUES (@nome, @cpf, @email, @telefone, @data_nascimento, @senha_hash)
+            INSERT INTO usuarios (nome, cpf, email, telefone, data_nascimento, senha)
+            VALUES (@nome, @cpf, @email, @telefone, @data_nascimento::date, @senha)
             RETURNING id, nome, cpf";
 
         cmd.Parameters.AddWithValue("nome", paciente.Nome);
@@ -36,7 +36,7 @@ public class SupabaseAuthRepository : IAuthRepository
         cmd.Parameters.AddWithValue("email", (object?)paciente.Email ?? DBNull.Value);
         cmd.Parameters.AddWithValue("telefone", (object?)paciente.Telefone ?? DBNull.Value);
         cmd.Parameters.AddWithValue("data_nascimento", (object?)paciente.DataNascimento ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("senha_hash", (object?)paciente.SenhaHash ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("senha", (object?)paciente.SenhaHash ?? DBNull.Value);
 
         await using var reader = await cmd.ExecuteReaderAsync();
         await reader.ReadAsync();
@@ -48,7 +48,7 @@ public class SupabaseAuthRepository : IAuthRepository
     {
         await using var conn = await _dataSource.OpenConnectionAsync();
         await using var cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT id, nome, cpf, senha_hash FROM usuarios WHERE cpf = @cpf LIMIT 1";
+        cmd.CommandText = "SELECT id, nome, cpf, senha FROM usuarios WHERE cpf = @cpf LIMIT 1";
         cmd.Parameters.AddWithValue("cpf", cpf);
 
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -68,9 +68,9 @@ public class SupabaseAuthRepository : IAuthRepository
         await using var conn = await _dataSource.OpenConnectionAsync();
         await using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            SELECT id, nome, cpf, email, telefone, data_nascimento, genero, tipo_sanguineo,
+            SELECT id, nome, cpf, email, telefone, data_nascimento::text, genero, tipo_sanguineo,
                    hospital_vinculado, cep, rua, numero, bairro, cidade, estado,
-                   possui_plano_saude, nome_plano, numero_carteirinha, validade_carteirinha,
+                   possui_plano_saude, nome_plano, numero_carteirinha, validade_carteirinha::text,
                    nome_responsavel, parentesco, telefone_responsavel
             FROM usuarios WHERE id = @id LIMIT 1";
         cmd.Parameters.AddWithValue("id", id);
@@ -111,7 +111,7 @@ public class SupabaseAuthRepository : IAuthRepository
         await using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
             UPDATE usuarios SET
-                nome = @nome, email = @email, telefone = @telefone, data_nascimento = @data_nascimento,
+                nome = @nome, email = @email, telefone = @telefone, data_nascimento = @data_nascimento::date,
                 genero = @genero, cep = @cep, rua = @rua, numero = @numero, bairro = @bairro,
                 cidade = @cidade, estado = @estado
             WHERE id = @id";

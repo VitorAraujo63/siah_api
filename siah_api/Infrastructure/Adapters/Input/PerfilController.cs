@@ -8,7 +8,6 @@ namespace SiahApi.Infrastructure.Adapters.Input;
 
 [ApiController]
 [Route("profile")]
-[Authorize]
 [Tags("Perfil")]
 public class PerfilController : ControllerBase
 {
@@ -19,59 +18,57 @@ public class PerfilController : ControllerBase
         _perfilUseCase = perfilUseCase;
     }
 
-    private Guid UserId => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? Guid.Empty.ToString());
-
     // SIAH_Especificacao_API_v1.docx
     [HttpGet]
     [ProducesResponseType(typeof(PerfilResponse), StatusCodes.Status200OK)]
-    public async Task<IActionResult> Obter()
+    public async Task<IActionResult> Obter([FromQuery] Guid userId)
     {
-        var resultado = await _perfilUseCase.ObterAsync(UserId);
+        var resultado = await _perfilUseCase.ObterAsync(userId);
         return Ok(resultado);
     }
 
     // SIAH_Especificacao_API_v1.docx
     [HttpPut]
     [ProducesResponseType(typeof(PerfilResponse), StatusCodes.Status200OK)]
-    public async Task<IActionResult> Atualizar([FromBody] AtualizarPerfilRequest request)
+    public async Task<IActionResult> Atualizar([FromBody] AtualizarPerfilRequest request, [FromQuery] Guid userId)
     {
-        var resultado = await _perfilUseCase.AtualizarAsync(UserId, request);
+        var resultado = await _perfilUseCase.AtualizarAsync(userId, request);
         return Ok(resultado);
     }
 
     // SIAH_Especificacao_API_v1.docx
     [HttpPatch("basic-info")]
     [ProducesResponseType(typeof(PerfilResponse), StatusCodes.Status200OK)]
-    public async Task<IActionResult> AtualizarDadosBasicos([FromBody] AtualizarDadosBasicosRequest request)
+    public async Task<IActionResult> AtualizarDadosBasicos([FromBody] AtualizarDadosBasicosRequest request, [FromQuery] Guid userId)
     {
-        var resultado = await _perfilUseCase.AtualizarDadosBasicosAsync(UserId, request);
+        var resultado = await _perfilUseCase.AtualizarDadosBasicosAsync(userId, request);
         return Ok(resultado);
     }
 
     // SIAH_Especificacao_API_v1.docx
     [HttpPatch("photo")]
     [ProducesResponseType(typeof(AtualizarFotoResponse), StatusCodes.Status200OK)]
-    public async Task<IActionResult> AtualizarFoto(IFormFile photo)
+    public async Task<IActionResult> AtualizarFoto(IFormFile photo, [FromQuery] Guid userId)
     {
-        var resultado = await _perfilUseCase.AtualizarFotoAsync(UserId, photo);
+        var resultado = await _perfilUseCase.AtualizarFotoAsync(userId, photo);
         return Ok(resultado);
     }
 
     // SIAH_Especificacao_API_v1.docx
     [HttpDelete("photo")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> RemoverFoto()
+    public async Task<IActionResult> RemoverFoto([FromQuery] Guid userId)
     {
-        await _perfilUseCase.RemoverFotoAsync(UserId);
+        await _perfilUseCase.RemoverFotoAsync(userId);
         return Ok(new { mensagem = "Foto removida com sucesso." });
     }
 
     // SIAH_Especificacao_API_v1.docx
     [HttpDelete]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> SolicitarExclusao()
+    public async Task<IActionResult> SolicitarExclusao([FromQuery] Guid userId)
     {
-        await _perfilUseCase.SolicitarExclusaoAsync(UserId);
+        await _perfilUseCase.SolicitarExclusaoAsync(userId);
         return Ok(new { mensagem = "Solicitação de exclusão registrada. Você receberá um e-mail de confirmação." });
     }
 }

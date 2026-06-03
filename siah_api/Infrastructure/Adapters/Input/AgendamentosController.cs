@@ -8,7 +8,6 @@ namespace SiahApi.Infrastructure.Adapters.Input;
 
 [ApiController]
 [Route("appointments")]
-[Authorize]
 [Tags("Agendamentos")]
 public class AgendamentosController : ControllerBase
 {
@@ -19,23 +18,21 @@ public class AgendamentosController : ControllerBase
         _agendamentoUseCase = agendamentoUseCase;
     }
 
-    private Guid UserId => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? Guid.Empty.ToString());
-
     // SIAH_Especificacao_API_v1.docx
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<AgendamentoResponse>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> Listar([FromQuery] AgendamentoFiltros filtros)
+    public async Task<IActionResult> Listar([FromQuery] AgendamentoFiltros filtros, [FromQuery] Guid userId)
     {
-        var resultado = await _agendamentoUseCase.ListarAsync(UserId, filtros);
+        var resultado = await _agendamentoUseCase.ListarAsync(userId, filtros);
         return Ok(resultado);
     }
 
     // SIAH_Especificacao_API_v1.docx
     [HttpGet("upcoming")]
     [ProducesResponseType(typeof(IEnumerable<AgendamentoResponse>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> ListarProximos()
+    public async Task<IActionResult> ListarProximos([FromQuery] Guid userId)
     {
-        var resultado = await _agendamentoUseCase.ListarProximosAsync(UserId);
+        var resultado = await _agendamentoUseCase.ListarProximosAsync(userId);
         return Ok(resultado);
     }
 
@@ -43,11 +40,11 @@ public class AgendamentosController : ControllerBase
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(AgendamentoResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> ObterPorId(Guid id)
+    public async Task<IActionResult> ObterPorId(Guid id, [FromQuery] Guid userId)
     {
         try
         {
-            var resultado = await _agendamentoUseCase.ObterPorIdAsync(UserId, id);
+            var resultado = await _agendamentoUseCase.ObterPorIdAsync(userId, id);
             return Ok(resultado);
         }
         catch (KeyNotFoundException ex)
@@ -60,11 +57,11 @@ public class AgendamentosController : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(AgendamentoResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<IActionResult> Agendar([FromBody] AgendarRequest request)
+    public async Task<IActionResult> Agendar([FromBody] AgendarRequest request, [FromQuery] Guid userId)
     {
         try
         {
-            var resultado = await _agendamentoUseCase.AgendarAsync(UserId, request);
+            var resultado = await _agendamentoUseCase.AgendarAsync(userId, request);
             return StatusCode(StatusCodes.Status201Created, resultado);
         }
         catch (InvalidOperationException)
@@ -77,11 +74,11 @@ public class AgendamentosController : ControllerBase
     [HttpPatch("{id:guid}/reschedule")]
     [ProducesResponseType(typeof(AgendamentoResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Reagendar(Guid id, [FromBody] ReagendarRequest request)
+    public async Task<IActionResult> Reagendar(Guid id, [FromBody] ReagendarRequest request, [FromQuery] Guid userId)
     {
         try
         {
-            var resultado = await _agendamentoUseCase.ReagendarAsync(UserId, id, request);
+            var resultado = await _agendamentoUseCase.ReagendarAsync(userId, id, request);
             return Ok(resultado);
         }
         catch (KeyNotFoundException ex)
@@ -94,11 +91,11 @@ public class AgendamentosController : ControllerBase
     [HttpDelete("{id:guid}/cancel")]
     [ProducesResponseType(typeof(AgendamentoResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Cancelar(Guid id, [FromBody] CancelarRequest request)
+    public async Task<IActionResult> Cancelar(Guid id, [FromBody] CancelarRequest request, [FromQuery] Guid userId)
     {
         try
         {
-            var resultado = await _agendamentoUseCase.CancelarAsync(UserId, id, request);
+            var resultado = await _agendamentoUseCase.CancelarAsync(userId, id, request);
             return Ok(new { sucesso = true, mensagem = "Consulta cancelada com sucesso.", data = resultado });
         }
         catch (KeyNotFoundException ex)

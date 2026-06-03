@@ -19,23 +19,13 @@ public class SupabaseMedicoRepository : IMedicoRepository
         var resultado = new List<Medico>();
         await using var conn = await _dataSource.OpenConnectionAsync();
         await using var cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT id, nome, especialidade, hospital_id, foto_url, rating, disponivel_hoje FROM medicos WHERE 1=1";
+        cmd.CommandText = "SELECT id, nome, especialidade FROM profissionais WHERE tipo_profissional ILIKE 'Medico'";
 
         if (!string.IsNullOrEmpty(filtros.Name))
         {
             cmd.CommandText += " AND nome ILIKE @nome";
             cmd.Parameters.AddWithValue("nome", $"%{filtros.Name}%");
         }
-        if (filtros.AvailableToday.HasValue)
-        {
-            cmd.CommandText += " AND disponivel_hoje = @disponivel_hoje";
-            cmd.Parameters.AddWithValue("disponivel_hoje", filtros.AvailableToday.Value);
-        }
-        if (filtros.RatingMin.HasValue)
-        {
-            cmd.CommandText += " AND rating >= @rating_min";
-            cmd.Parameters.AddWithValue("rating_min", filtros.RatingMin.Value);
-        }
 
         await using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
@@ -44,30 +34,17 @@ public class SupabaseMedicoRepository : IMedicoRepository
         return resultado;
     }
 
-    public async Task<IEnumerable<Medico>> ListarFavoritosPorUsuarioAsync(Guid userId)
+    public Task<IEnumerable<Medico>> ListarFavoritosPorUsuarioAsync(Guid userId)
     {
-        var resultado = new List<Medico>();
-        await using var conn = await _dataSource.OpenConnectionAsync();
-        await using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"
-            SELECT m.id, m.nome, m.especialidade, m.hospital_id, m.foto_url, m.rating, m.disponivel_hoje
-            FROM medicos m
-            INNER JOIN medicos_favoritos mf ON m.id = mf.id_medico
-            WHERE mf.id_usuario = @id_usuario";
-        cmd.Parameters.AddWithValue("id_usuario", userId);
-
-        await using var reader = await cmd.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
-            resultado.Add(MapearMedico(reader));
-
-        return resultado;
+        // Mock: Não há tabela de médicos favoritos no DB atual
+        return Task.FromResult<IEnumerable<Medico>>(new List<Medico>());
     }
 
     public async Task<Medico?> ObterPorIdAsync(Guid medicoId)
     {
         await using var conn = await _dataSource.OpenConnectionAsync();
         await using var cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT id, nome, especialidade, hospital_id, foto_url, rating, disponivel_hoje FROM medicos WHERE id = @id LIMIT 1";
+        cmd.CommandText = "SELECT id, nome, especialidade FROM profissionais WHERE id = @id LIMIT 1";
         cmd.Parameters.AddWithValue("id", medicoId);
 
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -82,46 +59,22 @@ public class SupabaseMedicoRepository : IMedicoRepository
         return Task.FromResult<IEnumerable<(string, string, bool)>>(new List<(string, string, bool)>());
     }
 
-    public async Task<IEnumerable<(string Avaliador, string? Comentario, decimal Nota, DateTime Data)>> ObterAvaliacoesAsync(Guid medicoId)
+    public Task<IEnumerable<(string Avaliador, string? Comentario, decimal Nota, DateTime Data)>> ObterAvaliacoesAsync(Guid medicoId)
     {
-        var resultado = new List<(string, string?, decimal, DateTime)>();
-        await using var conn = await _dataSource.OpenConnectionAsync();
-        await using var cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT avaliador, comentario, nota, criado_em FROM avaliacoes_medicos WHERE id_medico = @id_medico ORDER BY criado_em DESC";
-        cmd.Parameters.AddWithValue("id_medico", medicoId);
-
-        await using var reader = await cmd.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
-        {
-            resultado.Add((
-                reader.GetString(0),
-                reader.IsDBNull(1) ? null : reader.GetString(1),
-                reader.GetDecimal(2),
-                reader.GetDateTime(3)
-            ));
-        }
-
-        return resultado;
+        // Mock: Não há tabela de avaliações no DB atual
+        return Task.FromResult<IEnumerable<(string, string?, decimal, DateTime)>>(new List<(string, string?, decimal, DateTime)>());
     }
 
-    public async Task FavoritarAsync(Guid userId, Guid medicoId)
+    public Task FavoritarAsync(Guid userId, Guid medicoId)
     {
-        await using var conn = await _dataSource.OpenConnectionAsync();
-        await using var cmd = conn.CreateCommand();
-        cmd.CommandText = "INSERT INTO medicos_favoritos (id_usuario, id_medico) VALUES (@id_usuario, @id_medico) ON CONFLICT DO NOTHING";
-        cmd.Parameters.AddWithValue("id_usuario", userId);
-        cmd.Parameters.AddWithValue("id_medico", medicoId);
-        await cmd.ExecuteNonQueryAsync();
+        // Mock
+        return Task.CompletedTask;
     }
 
-    public async Task DesfavoritarAsync(Guid userId, Guid medicoId)
+    public Task DesfavoritarAsync(Guid userId, Guid medicoId)
     {
-        await using var conn = await _dataSource.OpenConnectionAsync();
-        await using var cmd = conn.CreateCommand();
-        cmd.CommandText = "DELETE FROM medicos_favoritos WHERE id_usuario = @id_usuario AND id_medico = @id_medico";
-        cmd.Parameters.AddWithValue("id_usuario", userId);
-        cmd.Parameters.AddWithValue("id_medico", medicoId);
-        await cmd.ExecuteNonQueryAsync();
+        // Mock
+        return Task.CompletedTask;
     }
 
     public async Task<IEnumerable<Medico>> BuscarAsync(string termo)
@@ -130,9 +83,9 @@ public class SupabaseMedicoRepository : IMedicoRepository
         await using var conn = await _dataSource.OpenConnectionAsync();
         await using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            SELECT id, nome, especialidade, hospital_id, foto_url, rating, disponivel_hoje
-            FROM medicos
-            WHERE nome ILIKE @termo OR especialidade ILIKE @termo";
+            SELECT id, nome, especialidade
+            FROM profissionais
+            WHERE tipo_profissional ILIKE 'Medico' AND (nome ILIKE @termo OR especialidade ILIKE @termo)";
         cmd.Parameters.AddWithValue("termo", $"%{termo}%");
 
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -146,10 +99,10 @@ public class SupabaseMedicoRepository : IMedicoRepository
     {
         Id = reader.GetGuid(0),
         Nome = reader.GetString(1),
-        Especialidade = reader.GetString(2),
-        HospitalId = reader.IsDBNull(3) ? null : reader.GetGuid(3),
-        FotoUrl = reader.IsDBNull(4) ? null : reader.GetString(4),
-        Rating = reader.IsDBNull(5) ? 0 : reader.GetDecimal(5),
-        DisponivelHoje = !reader.IsDBNull(6) && reader.GetBoolean(6)
+        Especialidade = reader.IsDBNull(2) ? "" : reader.GetString(2),
+        HospitalId = null,
+        FotoUrl = null,
+        Rating = 5.0m, // Mock default rating
+        DisponivelHoje = true // Mock
     };
 }

@@ -1,8 +1,6 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SiahApi.Application.DTOs.Auth;
 using SiahApi.Domain.Ports.Input;
-using System.Security.Claims;
 
 namespace SiahApi.Infrastructure.Adapters.Input;
 
@@ -18,10 +16,11 @@ public class AuthController : ControllerBase
         _authUseCase = authUseCase;
     }
 
-    // SIAH_Especificacao_API_v1.docx
+    // Documentação de Integração_ SIAH API C#.pdf
     [HttpPost("register")]
     [ProducesResponseType(typeof(RegisterResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
         try
@@ -39,7 +38,7 @@ public class AuthController : ControllerBase
         }
     }
 
-    // SIAH_Especificacao_API_v1.docx
+    // Documentação de Integração_ SIAH API C#.pdf
     [HttpPost("login")]
     [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -52,36 +51,7 @@ public class AuthController : ControllerBase
         }
         catch (UnauthorizedAccessException ex)
         {
-            return Unauthorized(new { mensagem = ex.Message });
-        }
-    }
-
-    // SIAH_Especificacao_API_v1.docx
-    [HttpPost("logout")]
-    [Authorize]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> Logout()
-    {
-        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? Guid.Empty.ToString());
-        var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-        await _authUseCase.LogoutAsync(userId, token);
-        return Ok(new { mensagem = "Logout realizado com sucesso." });
-    }
-
-    // SIAH_Especificacao_API_v1.docx
-    [HttpPost("refresh")]
-    [ProducesResponseType(typeof(RefreshResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> Refresh([FromBody] RefreshRequest request)
-    {
-        try
-        {
-            var resultado = await _authUseCase.RefreshAsync(request);
-            return Ok(resultado);
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            return Unauthorized(new { mensagem = ex.Message });
+            return Unauthorized(new { sucesso = false, mensagem = ex.Message });
         }
     }
 }
