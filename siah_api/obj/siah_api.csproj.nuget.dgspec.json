@@ -1,25 +1,32 @@
 {
   "format": 1,
   "restore": {
-    "/Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/siah_api.csproj": {}
+    "C:\\Users\\Mateus Amaro\\Documents\\Projetos\\SIAH\\siah_api-main\\siah_api\\siah_api.csproj": {}
   },
   "projects": {
-    "/Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/siah_api.csproj": {
+    "C:\\Users\\Mateus Amaro\\Documents\\Projetos\\SIAH\\siah_api-main\\siah_api\\siah_api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/siah_api.csproj",
+        "projectUniqueName": "C:\\Users\\Mateus Amaro\\Documents\\Projetos\\SIAH\\siah_api-main\\siah_api\\siah_api.csproj",
         "projectName": "siah_api",
-        "projectPath": "/Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/siah_api.csproj",
-        "packagesPath": "/Users/vitorh/.nuget/packages/",
-        "outputPath": "/Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/obj/",
+        "projectPath": "C:\\Users\\Mateus Amaro\\Documents\\Projetos\\SIAH\\siah_api-main\\siah_api\\siah_api.csproj",
+        "packagesPath": "C:\\Users\\Mateus Amaro\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Mateus Amaro\\Documents\\Projetos\\SIAH\\siah_api-main\\siah_api\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "/Users/vitorh/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\Mateus Amaro\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -37,7 +44,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
@@ -79,7 +87,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.418/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.311/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

@@ -38,7 +38,14 @@ public static class DependencyInjection
         services.AddScoped<IScreeningRepository, SupabaseScreeningRepository>();
         services.AddScoped<IPacientDetailRepository, SupabasePacientDetailRepository>();
 
-        services.AddScoped<IFaceEmbeddingService, FaceEmbeddingServiceStub>();
+        // Gerador de embeddings facial real: chama o microserviço Python (DeepFace).
+        // O stub (FaceEmbeddingServiceStub) retornava sempre array vazio → reconhecimento
+        // nunca funcionava. Typed HttpClient com timeout alto porque a 1ª chamada do
+        // DeepFace carrega o modelo VGG-Face e pode demorar dezenas de segundos.
+        services.AddHttpClient<IFaceEmbeddingService, FaceEmbeddingServiceHttp>(client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(120);
+        });
 
         return services;
     }

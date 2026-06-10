@@ -35,3 +35,41 @@
 /Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/obj/Debug/net8.0/siah_api.sourcelink.json
 /Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/bin/Debug/net8.0/Microsoft.Extensions.Configuration.FileExtensions.dll
 /Users/vitorh/RiderProjects/ApiFilmes/siah_api/siah_api/bin/Debug/net8.0/Microsoft.Extensions.Configuration.Json.dll
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\bin\Debug\net8.0\appsettings.Development.json
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\bin\Debug\net8.0\appsettings.json
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\bin\Debug\net8.0\siah_api.staticwebassets.endpoints.json
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\bin\Debug\net8.0\siah_api.exe
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\bin\Debug\net8.0\siah_api.deps.json
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\bin\Debug\net8.0\siah_api.runtimeconfig.json
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\bin\Debug\net8.0\siah_api.dll
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\bin\Debug\net8.0\siah_api.pdb
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\bin\Debug\net8.0\Microsoft.AspNetCore.OpenApi.dll
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\bin\Debug\net8.0\Microsoft.Extensions.Configuration.FileExtensions.dll
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\bin\Debug\net8.0\Microsoft.Extensions.Configuration.Json.dll
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\bin\Debug\net8.0\Microsoft.OpenApi.dll
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\bin\Debug\net8.0\Npgsql.dll
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\obj\Debug\net8.0\siah_api.csproj.AssemblyReference.cache
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\obj\Debug\net8.0\rpswa.dswa.cache.json
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\obj\Debug\net8.0\siah_api.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\obj\Debug\net8.0\siah_api.AssemblyInfoInputs.cache
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\obj\Debug\net8.0\siah_api.AssemblyInfo.cs
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\obj\Debug\net8.0\siah_api.csproj.CoreCompileInputs.cache
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\obj\Debug\net8.0\siah_api.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\obj\Debug\net8.0\siah_api.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\obj\Debug\net8.0\rjimswa.dswa.cache.json
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\obj\Debug\net8.0\scopedcss\bundle\siah_api.styles.css
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\obj\Debug\net8.0\staticwebassets.build.json
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\obj\Debug\net8.0\staticwebassets.build.json.cache
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\obj\Debug\net8.0\staticwebassets.development.json
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\obj\Debug\net8.0\staticwebassets.build.endpoints.json
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\obj\Debug\net8.0\siah_api.csproj.Up2Date
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\obj\Debug\net8.0\siah_api.dll
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\obj\Debug\net8.0\refint\siah_api.dll
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\obj\Debug\net8.0\siah_api.pdb
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\obj\Debug\net8.0\siah_api.genruntimeconfig.cache
+C:\Users\Mateus Amaro\Documents\Projetos\SIAH\siah_api-main\siah_api\obj\Debug\net8.0\ref\siah_api.dll

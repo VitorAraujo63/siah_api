@@ -1,11 +1,1 @@
-{
-  "Version": 1,
-  "Hash": "RaGRnWEeZSlsK0RI4gIw4fRD7HJFs5bHGsIcm3e0dqQ=",
-  "Source": "siah_api",
-  "BasePath": "_content/siah_api",
-  "Mode": "Default",
-  "ManifestType": "Build",
-  "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
-  "Assets": []
-}
+{"Version":1,"Hash":"5Cr+PJKjXv71RI/f2GdSW8PME/rJGlAO/zH1gEvI8UQ=","Source":"siah_api","BasePath":"_content/siah_api","Mode":"Default","ManifestType":"Build","ReferencedProjectsConfiguration":[],"DiscoveryPatterns":[],"Assets":[],"Endpoints":[]}
