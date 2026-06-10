@@ -24,7 +24,7 @@ public class FilaUseCase : IFilaUseCase
             Cpf = request.PatientCpf,
             NumeroSenha = $"A-{posicao:D3}",
             Especialidade = request.ServiceType,
-            Status = "waiting"
+            Status = "in_service"
         };
 
         var emitida = await _filaRepository.EmitirSenhaAsync(senha);
@@ -77,8 +77,12 @@ public class FilaUseCase : IFilaUseCase
         };
     }
 
-    public async Task ConfirmarPresencaAsync(long ticketId)
+
+    public async Task FinalizarAtendimentoAsync(long ticketId)
     {
-        await _filaRepository.AtualizarStatusAsync(ticketId, "in_service");
+        var senha = await _filaRepository.ObterPorIdAsync(ticketId)
+            ?? throw new KeyNotFoundException("Senha não encontrada.");
+
+        await _filaRepository.AtualizarStatusAsync(ticketId, "finished");
     }
 }

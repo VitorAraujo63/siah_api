@@ -33,7 +33,6 @@ public class BiometriaController : ControllerBase
         }
     }
 
-    // documentacao.pdf
     [HttpPost("identificar")]
     [ProducesResponseType(typeof(IdentificarBiometriaResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -48,5 +47,18 @@ public class BiometriaController : ControllerBase
         {
             return Unauthorized(new { erro = ex.Message });
         }
+    }
+
+    [HttpGet("{cpf}")]
+    [ProducesResponseType(typeof(ObterTemplateBiometriaResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ObterTemplate(string cpf)
+    {
+        var dados = await _biometriaUseCase.ObterTemplatePorCpfAsync(cpf);
+
+        if (dados == null)
+            return NotFound(new { erro = "CPF não encontrado ou sem biometria cadastrada." });
+
+        return Ok(dados);
     }
 }

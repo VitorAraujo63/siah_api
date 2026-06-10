@@ -7,10 +7,12 @@ namespace SiahApi.Application.UseCases;
 public class MedicoUseCase : IMedicoUseCase
 {
     private readonly IMedicoRepository _medicoRepository;
+    private readonly IAuthRepository _authRepository;
 
-    public MedicoUseCase(IMedicoRepository medicoRepository)
+    public MedicoUseCase(IMedicoRepository medicoRepository, IAuthRepository authRepository)
     {
         _medicoRepository = medicoRepository;
+        _authRepository = authRepository;
     }
 
     public async Task<IEnumerable<MedicoResponse>> ListarAsync(MedicoFiltros filtros)
@@ -27,8 +29,9 @@ public class MedicoUseCase : IMedicoUseCase
         });
     }
 
-    public async Task<IEnumerable<MedicoResponse>> ListarFavoritosAsync(Guid userId)
+    public async Task<IEnumerable<MedicoResponse>> ListarFavoritosAsync(string cpf)
     {
+        var userId = await ResolverUserIdAsync(cpf);
         var medicos = await _medicoRepository.ListarFavoritosPorUsuarioAsync(userId);
         return medicos.Select(m => new MedicoResponse
         {
@@ -85,11 +88,17 @@ public class MedicoUseCase : IMedicoUseCase
         });
     }
 
-    public Task FavoritarAsync(Guid userId, Guid medicoId)
-        => _medicoRepository.FavoritarAsync(userId, medicoId);
+    public async Task FavoritarAsync(string cpf, Guid medicoId)
+    {
+        var userId = await ResolverUserIdAsync(cpf);
+        await _medicoRepository.FavoritarAsync(userId, medicoId);
+    }
 
-    public Task DesfavoritarAsync(Guid userId, Guid medicoId)
-        => _medicoRepository.DesfavoritarAsync(userId, medicoId);
+    public async Task DesfavoritarAsync(string cpf, Guid medicoId)
+    {
+        var userId = await ResolverUserIdAsync(cpf);
+        await _medicoRepository.DesfavoritarAsync(userId, medicoId);
+    }
 
     public async Task<IEnumerable<MedicoResponse>> BuscarAsync(string termo)
     {
@@ -103,5 +112,12 @@ public class MedicoUseCase : IMedicoUseCase
             Rating = m.Rating,
             DisponivelHoje = m.DisponivelHoje
         });
+    }
+
+    private async Task<Guid> ResolverUserIdAsync(string cpf)
+    {
+        var paciente = await _authRepository.ObterPorCpfAsync(cpf)
+            ?? throw new KeyNotFoundException("Paciente não encontrado para o CPF informado.");
+        return paciente.Id;
     }
 }

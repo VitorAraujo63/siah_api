@@ -1,8 +1,6 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SiahApi.Application.DTOs.Documento;
 using SiahApi.Domain.Ports.Input;
-using System.Security.Claims;
 
 namespace SiahApi.Infrastructure.Adapters.Input;
 
@@ -18,24 +16,22 @@ public class DocumentosController : ControllerBase
         _documentoUseCase = documentoUseCase;
     }
 
-    // SIAH_Especificacao_API_v1.docx
     [HttpGet("certificates")]
     [ProducesResponseType(typeof(IEnumerable<DocumentoResponse>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> ListarAtestados([FromQuery] Guid userId)
+    public async Task<IActionResult> ListarAtestados([FromQuery] string cpf)
     {
-        var resultado = await _documentoUseCase.ListarAtestadosAsync(userId);
+        var resultado = await _documentoUseCase.ListarAtestadosAsync(cpf);
         return Ok(resultado);
     }
 
-    // SIAH_Especificacao_API_v1.docx
     [HttpGet("certificates/{id:guid}/pdf")]
     [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> ObterAtestadoPdf(Guid id, [FromQuery] Guid userId)
+    public async Task<IActionResult> ObterAtestadoPdf(Guid id, [FromQuery] string cpf)
     {
         try
         {
-            var pdf = await _documentoUseCase.ObterAtestadoPdfAsync(userId, id);
+            var pdf = await _documentoUseCase.ObterAtestadoPdfAsync(cpf, id);
             return File(pdf, "application/pdf", $"atestado-{id}.pdf");
         }
         catch (KeyNotFoundException ex)
@@ -44,24 +40,22 @@ public class DocumentosController : ControllerBase
         }
     }
 
-    // SIAH_Especificacao_API_v1.docx
     [HttpGet("exams")]
     [ProducesResponseType(typeof(IEnumerable<DocumentoResponse>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> ListarExames([FromQuery] Guid userId)
+    public async Task<IActionResult> ListarExames([FromQuery] string cpf)
     {
-        var resultado = await _documentoUseCase.ListarExamesAsync(userId);
+        var resultado = await _documentoUseCase.ListarExamesAsync(cpf);
         return Ok(resultado);
     }
 
-    // SIAH_Especificacao_API_v1.docx
     [HttpGet("exams/{id:guid}/result")]
     [ProducesResponseType(typeof(DocumentoResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> ObterResultadoExame(Guid id, [FromQuery] Guid userId)
+    public async Task<IActionResult> ObterResultadoExame(Guid id, [FromQuery] string cpf)
     {
         try
         {
-            var resultado = await _documentoUseCase.ObterResultadoExameAsync(userId, id);
+            var resultado = await _documentoUseCase.ObterResultadoExameAsync(cpf, id);
             return Ok(resultado);
         }
         catch (KeyNotFoundException ex)
@@ -70,30 +64,27 @@ public class DocumentosController : ControllerBase
         }
     }
 
-    // SIAH_Especificacao_API_v1.docx
     [HttpGet("prescriptions")]
     [ProducesResponseType(typeof(IEnumerable<DocumentoResponse>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> ListarReceitas([FromQuery] Guid userId)
+    public async Task<IActionResult> ListarReceitas([FromQuery] string cpf)
     {
-        var resultado = await _documentoUseCase.ListarReceitasAsync(userId);
+        var resultado = await _documentoUseCase.ListarReceitasAsync(cpf);
         return Ok(resultado);
     }
 
-    // SIAH_Especificacao_API_v1.docx
     [HttpGet("prescriptions/active")]
     [ProducesResponseType(typeof(IEnumerable<DocumentoResponse>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> ListarReceitasAtivas([FromQuery] Guid userId)
+    public async Task<IActionResult> ListarReceitasAtivas([FromQuery] string cpf)
     {
-        var resultado = await _documentoUseCase.ListarReceitasAtivasAsync(userId);
+        var resultado = await _documentoUseCase.ListarReceitasAtivasAsync(cpf);
         return Ok(resultado);
     }
 
-    // SIAH_Especificacao_API_v1.docx
     [HttpGet("search")]
     [ProducesResponseType(typeof(IEnumerable<DocumentoResponse>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> Buscar([FromQuery] string q, [FromQuery] Guid userId)
+    public async Task<IActionResult> Buscar([FromQuery] string q, [FromQuery] string cpf)
     {
-        var resultado = await _documentoUseCase.BuscarAsync(userId, q);
+        var resultado = await _documentoUseCase.BuscarAsync(cpf, q);
         return Ok(resultado);
     }
 }

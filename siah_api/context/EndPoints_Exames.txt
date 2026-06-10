@@ -1,0 +1,23 @@
+Busca de Exames, existe o EndPoint de /documents/exams mas tem algumas informações que preciso ainda, junto do parâmetro opcional de pesquisa/search(que compara com o tipo_exame, o ideal seria que fizesse um 'tipo_exame LIKE "%pesquisa%" ' no banco de dados) 
+
+GET /Exams/?cpf={cpf}&pesquisa={pesquisa}
+Exemplo de resposta:
+[
+    {
+        "id": "c484a974-1dfd-40e9-880f-97ce3828abba",
+        "exam": "Ultra Son",
+        "date_exam": "2026-04-29",
+        "pdfUrl": "",
+        "name_laboratory": "Laboratório José Mesqueta"
+    },
+]
+
+POST /Exams
+Exemplo de Envio:
+    {
+        "id_pacient": "string",
+        "exam": "string",
+        "date_exam": "2026-04-29",
+        "pdfUrl": "string",
+        "name_laboratory": "string"
+    }

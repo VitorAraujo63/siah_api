@@ -1,0 +1,29 @@
+Busca de Triagens, Não achei nenhum EndPoint que listas as Triagens do paciente, então seria criar o EndPoint com o parâmetro opcional de pesquisa/search(que compara com o queixa_principal, o ideal seria que fizesse um 'queixa_principal LIKE "%pesquisa%" ' no banco de dados) 
+
+GET /Screenings/?cpf={cpf}&pesquisa={pesquisa}
+Exemplo de resposta:
+[
+    {
+        "id": "d77bdd69-6656-4279-9a80-5c4353236761",
+        "blood_pressure": "124/89",
+        "temperature": "35.9",
+        "heart_rate": 99,
+        "weight": 87.0,
+        "height": 1.54,
+        "complaint": "Dor no corpo todo",
+        "date_screening": "2026-06-04T20:02:00"
+    },
+]
+
+
+POST /Screenings
+Exemplo de Envio:
+    {
+        "blood_pressure": "string",
+        "temperature": "string",
+        "heart_rate": int,
+        "weight": float,
+        "height": float,
+        "complaint": "string",
+        "date_screening": "2026-06-04T20:02:00"
+    }

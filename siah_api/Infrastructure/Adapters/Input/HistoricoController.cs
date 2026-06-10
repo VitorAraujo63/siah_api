@@ -1,8 +1,6 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SiahApi.Application.DTOs.Historico;
 using SiahApi.Domain.Ports.Input;
-using System.Security.Claims;
 
 namespace SiahApi.Infrastructure.Adapters.Input;
 
@@ -18,24 +16,22 @@ public class HistoricoController : ControllerBase
         _historicoUseCase = historicoUseCase;
     }
 
-    // SIAH_Especificacao_API_v1.docx
     [HttpGet("appointments")]
     [ProducesResponseType(typeof(IEnumerable<HistoricoResponse>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> Listar([FromQuery] HistoricoFiltros filtros, [FromQuery] Guid userId)
+    public async Task<IActionResult> Listar([FromQuery] HistoricoFiltros filtros, [FromQuery] string cpf)
     {
-        var resultado = await _historicoUseCase.ListarAsync(userId, filtros);
+        var resultado = await _historicoUseCase.ListarAsync(cpf, filtros);
         return Ok(resultado);
     }
 
-    // SIAH_Especificacao_API_v1.docx
     [HttpGet("appointments/{id:guid}")]
     [ProducesResponseType(typeof(HistoricoResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> ObterPorId(Guid id, [FromQuery] Guid userId)
+    public async Task<IActionResult> ObterPorId(Guid id, [FromQuery] string cpf)
     {
         try
         {
-            var resultado = await _historicoUseCase.ObterPorIdAsync(userId, id);
+            var resultado = await _historicoUseCase.ObterPorIdAsync(cpf, id);
             return Ok(resultado);
         }
         catch (KeyNotFoundException ex)
@@ -44,12 +40,11 @@ public class HistoricoController : ControllerBase
         }
     }
 
-    // SIAH_Especificacao_API_v1.docx
     [HttpGet("recent")]
     [ProducesResponseType(typeof(IEnumerable<HistoricoResponse>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> ListarRecentes([FromQuery] Guid userId)
+    public async Task<IActionResult> ListarRecentes([FromQuery] string cpf)
     {
-        var resultado = await _historicoUseCase.ListarRecentesAsync(userId);
+        var resultado = await _historicoUseCase.ListarRecentesAsync(cpf);
         return Ok(resultado);
     }
 }

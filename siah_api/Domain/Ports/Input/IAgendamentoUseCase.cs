@@ -4,10 +4,10 @@ namespace SiahApi.Domain.Ports.Input;
 
 public interface IAgendamentoUseCase
 {
-    Task<IEnumerable<AgendamentoResponse>> ListarAsync(Guid userId, AgendamentoFiltros filtros);
-    Task<IEnumerable<AgendamentoResponse>> ListarProximosAsync(Guid userId);
-    Task<AgendamentoResponse> ObterPorIdAsync(Guid userId, Guid agendamentoId);
-    Task<AgendamentoResponse> AgendarAsync(Guid userId, AgendarRequest request);
-    Task<AgendamentoResponse> ReagendarAsync(Guid userId, Guid agendamentoId, ReagendarRequest request);
-    Task<AgendamentoResponse> CancelarAsync(Guid userId, Guid agendamentoId, CancelarRequest request);
+    Task<IEnumerable<AgendamentoResponse>> ListarAsync(string cpf, AgendamentoFiltros filtros);
+    Task<IEnumerable<AgendamentoResponse>> ListarProximosAsync(string cpf);
+    Task<AgendamentoResponse> ObterPorIdAsync(string cpf, Guid agendamentoId);
+    Task<AgendamentoResponse> AgendarAsync(string cpf, AgendarRequest request);
+    Task<AgendamentoResponse> ReagendarAsync(string cpf, Guid agendamentoId, ReagendarRequest request);
+    Task<AgendamentoResponse> CancelarAsync(string cpf, Guid agendamentoId, CancelarRequest request);
 }

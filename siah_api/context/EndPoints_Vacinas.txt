@@ -1,0 +1,3 @@
+Busca de Vacinas, Já tem todos os EndPoints de Vacinas que preciso, só precisaria que adicionasse o parâmetro opcional de pesquisa/search(que compara com o nome_vacina, o ideal seria que fizesse um 'nome_vacina LIKE "%pesquisa%" ' no banco de dados) 
+
+GET /Screenings/?cpf={cpf}&pesquisa={pesquisa}

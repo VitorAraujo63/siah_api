@@ -1,4 +1,5 @@
 using Npgsql;
+using NpgsqlTypes;
 using SiahApi.Domain.Entities;
 using SiahApi.Domain.Ports.Output;
 
@@ -46,7 +47,12 @@ public class SupabasePacienteRepository : IPacienteRepository
         cmd.Parameters.AddWithValue("cpf", paciente.Cpf);
         cmd.Parameters.AddWithValue("email", (object?)paciente.Email ?? DBNull.Value);
         cmd.Parameters.AddWithValue("telefone", (object?)paciente.Telefone ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("data_nascimento", (object?)paciente.DataNascimento ?? DBNull.Value);
+        cmd.Parameters.Add(new NpgsqlParameter("data_nascimento", NpgsqlDbType.Date)
+        {
+            Value = !string.IsNullOrEmpty(paciente.DataNascimento)
+                ? DateOnly.Parse(paciente.DataNascimento)
+                : DBNull.Value
+        });
         cmd.Parameters.AddWithValue("genero", (object?)paciente.Genero ?? DBNull.Value);
         cmd.Parameters.AddWithValue("tipo_sanguineo", (object?)paciente.TipoSanguineo ?? DBNull.Value);
         cmd.Parameters.AddWithValue("hospital_vinculado", (object?)paciente.HospitalVinculado ?? DBNull.Value);
@@ -62,12 +68,20 @@ public class SupabasePacienteRepository : IPacienteRepository
         cmd.Parameters.AddWithValue("possui_plano_saude", paciente.PossuiPlanoSaude);
         cmd.Parameters.AddWithValue("nome_plano", (object?)paciente.NomePlano ?? DBNull.Value);
         cmd.Parameters.AddWithValue("numero_carteirinha", (object?)paciente.NumeroCarteirinha ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("validade_carteirinha", (object?)paciente.ValidadeCarteirinha ?? DBNull.Value);
+        cmd.Parameters.Add(new NpgsqlParameter("validade_carteirinha", NpgsqlDbType.Date)
+        {
+            Value = !string.IsNullOrEmpty(paciente.ValidadeCarteirinha)
+                ? DateOnly.Parse(paciente.ValidadeCarteirinha)
+                : DBNull.Value
+        });
         cmd.Parameters.AddWithValue("nome_responsavel", (object?)paciente.NomeResponsavel ?? DBNull.Value);
         cmd.Parameters.AddWithValue("parentesco", (object?)paciente.Parentesco ?? DBNull.Value);
         cmd.Parameters.AddWithValue("telefone_responsavel", (object?)paciente.TelefoneResponsavel ?? DBNull.Value);
         cmd.Parameters.AddWithValue("images", paciente.Images.ToArray());
-        cmd.Parameters.AddWithValue("embedding", (object?)paciente.Embedding ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("embedding",
+            paciente.Embedding != null
+                ? (object)paciente.Embedding.Select(f => (double)f).ToArray()
+                : DBNull.Value);
         cmd.Parameters.AddWithValue("embedding_path", (object?)paciente.EmbeddingPath ?? DBNull.Value);
 
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -94,11 +108,12 @@ public class SupabasePacienteRepository : IPacienteRepository
         await using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
+            var embeddingDouble = reader.GetFieldValue<double[]>(3);
             resultado.Add((
                 reader.GetGuid(0),
                 reader.GetString(1),
                 reader.GetString(2),
-                (float[])reader[3]
+                embeddingDouble.Select(d => (float)d).ToArray()
             ));
         }
 

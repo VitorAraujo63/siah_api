@@ -40,7 +40,4 @@ public class StatusSenhaResponse
     public int EstimatedWaitMinutes { get; set; }
 }
 
-public class ConfirmarPresencaRequest
-{
-    public long TicketId { get; set; }
-}
+

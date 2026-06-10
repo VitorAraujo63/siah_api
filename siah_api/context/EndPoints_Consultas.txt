@@ -1,0 +1,55 @@
+Busca de Consultas do Paciente, vi que esse endpoint já existe mas vou precisar que faça umas modificações, o endpoint tem que receber um parâmetro opcional de pesquisa/search(que compara com o motivo_consulta, o ideal seria que fizesse um 'motivo_consulta LIKE "%pesquisa%" ' no banco de dados): 
+
+
+GET /Consultations/?cpf={cpf}&pesquisa={pesquisa}
+Exemplo de resposta:
+[
+   {
+      "id":"a2fc0460-bbd9-4ac9-baa0-4dcd42be4d58",
+      "reason":"Dor de Cabeça",
+      "finalDiagnosis":"Perdeu o Braço!!!!!",
+      "date":"2026-06-02T14:47:00",
+      "observations":"",
+      "medications":[
+         {
+            "name":"Uma prótese"
+         }
+      ],
+      "doctor":{
+         "name":"Cergio",
+         "email":"cergio@hospital.com",
+         "specialty":"",
+         "type_profissional":"Enfermeiro"
+      },
+      "hospital":{
+         "cep":"99999-99",
+         "street":"Pedro de Caixias",
+         "neighborhood":"Norte",
+         "city":"Marilia",
+         "state":"SP",
+         "number":"0000",
+         "complement":"",
+         "name_hospital":"Hospital Central de Marilia"
+      }
+   }
+]
+
+
+Cadastro de Consultas: 
+
+POST /Consultations
+Exemplo de Envio:
+{
+    "id_pacient": "string",
+    "id_doctor": "string",
+    "id_hospital: "string",
+    "reason": "string",
+    "finalDiagnosis": "string",
+    "date": "2026-06-02T14:47:00",
+    "observations": "string",
+    "medications" : "string"
+}
+
+
+
+

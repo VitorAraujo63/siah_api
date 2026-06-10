@@ -30,6 +30,13 @@ public static class DependencyInjection
         services.AddScoped<IFilaRepository, SupabaseFilaRepository>();
         services.AddScoped<IHistoricoRepository, SupabaseHistoricoRepository>();
         services.AddScoped<IDocumentoRepository, SupabaseDocumentoRepository>();
+        services.AddScoped<IRagRepository, SupabaseRagRepository>();
+        services.AddScoped<IVacinaRepository, SupabaseVacinaRepository>();
+        services.AddScoped<IConsultaRepository, SupabaseConsultaRepository>();
+        services.AddScoped<IExameRepository, SupabaseExameRepository>();
+        services.AddScoped<IHospitalRepository, SupabaseHospitalRepository>();
+        services.AddScoped<IScreeningRepository, SupabaseScreeningRepository>();
+        services.AddScoped<IPacientDetailRepository, SupabasePacientDetailRepository>();
 
         services.AddScoped<IFaceEmbeddingService, FaceEmbeddingServiceStub>();
 
@@ -49,6 +56,13 @@ public static class DependencyInjection
         services.AddScoped<IFilaUseCase, FilaUseCase>();
         services.AddScoped<IHistoricoUseCase, HistoricoUseCase>();
         services.AddScoped<IDocumentoUseCase, DocumentoUseCase>();
+        services.AddScoped<IRagUseCase, RagUseCase>();
+        services.AddScoped<IVacinaUseCase, VacinaUseCase>();
+        services.AddScoped<IConsultaUseCase, ConsultaUseCase>();
+        services.AddScoped<IExameUseCase, ExameUseCase>();
+        services.AddScoped<IHospitalUseCase, HospitalUseCase>();
+        services.AddScoped<IScreeningUseCase, ScreeningUseCase>();
+        services.AddScoped<IPacientDetailUseCase, PacientDetailUseCase>();
 
         return services;
     }

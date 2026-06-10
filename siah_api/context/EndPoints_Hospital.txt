@@ -1,0 +1,16 @@
+Busca de Hospital, é um EndPoint pra trazer os hospitais disponíveis 
+
+GET /Hospitals
+[
+    {
+        "id": "2ad854d3-f14c-4ff8-ac23-a35b239bf531",
+        "nome_hospital": "Hospital Central de Marilia",
+        "cep": "99999-99",
+        "rua": "Pedro de Caixias",
+        "numero": "0000",
+        "complemento": "",
+        "bairro": "Norte",
+        "cidade": "Marilia",
+        "estado": "SP"
+    },
+]

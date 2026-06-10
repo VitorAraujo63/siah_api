@@ -9,27 +9,32 @@ public class AgendamentoUseCase : IAgendamentoUseCase
 {
     private readonly IAgendamentoRepository _agendamentoRepository;
     private readonly IMedicoRepository _medicoRepository;
+    private readonly IAuthRepository _authRepository;
 
-    public AgendamentoUseCase(IAgendamentoRepository agendamentoRepository, IMedicoRepository medicoRepository)
+    public AgendamentoUseCase(IAgendamentoRepository agendamentoRepository, IMedicoRepository medicoRepository, IAuthRepository authRepository)
     {
         _agendamentoRepository = agendamentoRepository;
         _medicoRepository = medicoRepository;
+        _authRepository = authRepository;
     }
 
-    public async Task<IEnumerable<AgendamentoResponse>> ListarAsync(Guid userId, AgendamentoFiltros filtros)
+    public async Task<IEnumerable<AgendamentoResponse>> ListarAsync(string cpf, AgendamentoFiltros filtros)
     {
+        var userId = await ResolverUserIdAsync(cpf);
         var agendamentos = await _agendamentoRepository.ListarPorUsuarioAsync(userId, filtros);
         return await MapearListaAsync(agendamentos);
     }
 
-    public async Task<IEnumerable<AgendamentoResponse>> ListarProximosAsync(Guid userId)
+    public async Task<IEnumerable<AgendamentoResponse>> ListarProximosAsync(string cpf)
     {
+        var userId = await ResolverUserIdAsync(cpf);
         var agendamentos = await _agendamentoRepository.ListarProximosPorUsuarioAsync(userId);
         return await MapearListaAsync(agendamentos);
     }
 
-    public async Task<AgendamentoResponse> ObterPorIdAsync(Guid userId, Guid agendamentoId)
+    public async Task<AgendamentoResponse> ObterPorIdAsync(string cpf, Guid agendamentoId)
     {
+        var userId = await ResolverUserIdAsync(cpf);
         var agendamento = await _agendamentoRepository.ObterPorIdAsync(agendamentoId)
             ?? throw new KeyNotFoundException("Agendamento não encontrado.");
 
@@ -39,8 +44,9 @@ public class AgendamentoUseCase : IAgendamentoUseCase
         return await MapearAsync(agendamento);
     }
 
-    public async Task<AgendamentoResponse> AgendarAsync(Guid userId, AgendarRequest request)
+    public async Task<AgendamentoResponse> AgendarAsync(string cpf, AgendarRequest request)
     {
+        var userId = await ResolverUserIdAsync(cpf);
         var disponivel = await _agendamentoRepository.HorarioDisponivelAsync(request.DoctorId, request.Date, request.TimeSlot);
         if (!disponivel)
             throw new InvalidOperationException("SLOT_UNAVAILABLE");
@@ -61,8 +67,9 @@ public class AgendamentoUseCase : IAgendamentoUseCase
         return await MapearAsync(criado);
     }
 
-    public async Task<AgendamentoResponse> ReagendarAsync(Guid userId, Guid agendamentoId, ReagendarRequest request)
+    public async Task<AgendamentoResponse> ReagendarAsync(string cpf, Guid agendamentoId, ReagendarRequest request)
     {
+        var userId = await ResolverUserIdAsync(cpf);
         var agendamento = await _agendamentoRepository.ObterPorIdAsync(agendamentoId)
             ?? throw new KeyNotFoundException("Agendamento não encontrado.");
 
@@ -76,8 +83,9 @@ public class AgendamentoUseCase : IAgendamentoUseCase
         return await MapearAsync(atualizado);
     }
 
-    public async Task<AgendamentoResponse> CancelarAsync(Guid userId, Guid agendamentoId, CancelarRequest request)
+    public async Task<AgendamentoResponse> CancelarAsync(string cpf, Guid agendamentoId, CancelarRequest request)
     {
+        var userId = await ResolverUserIdAsync(cpf);
         var agendamento = await _agendamentoRepository.ObterPorIdAsync(agendamentoId)
             ?? throw new KeyNotFoundException("Agendamento não encontrado.");
 
@@ -92,6 +100,13 @@ public class AgendamentoUseCase : IAgendamentoUseCase
 
         var atualizado = await _agendamentoRepository.AtualizarAsync(agendamento);
         return await MapearAsync(atualizado);
+    }
+
+    private async Task<Guid> ResolverUserIdAsync(string cpf)
+    {
+        var paciente = await _authRepository.ObterPorCpfAsync(cpf)
+            ?? throw new KeyNotFoundException("Paciente não encontrado para o CPF informado.");
+        return paciente.Id;
     }
 
     private async Task<IEnumerable<AgendamentoResponse>> MapearListaAsync(IEnumerable<Agendamento> agendamentos)

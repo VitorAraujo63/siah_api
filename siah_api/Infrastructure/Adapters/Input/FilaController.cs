@@ -59,11 +59,20 @@ public class FilaController : ControllerBase
         }
     }
 
-    [HttpPost("confirm-arrival")]
+
+    [HttpPost("finish/{ticketId:long}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> ConfirmarPresenca([FromBody] ConfirmarPresencaRequest request)
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> FinalizarAtendimento(long ticketId)
     {
-        await _filaUseCase.ConfirmarPresencaAsync(request.TicketId);
-        return Ok(new { mensagem = "Presença confirmada com sucesso." });
+        try
+        {
+            await _filaUseCase.FinalizarAtendimentoAsync(ticketId);
+            return Ok(new { mensagem = "Atendimento finalizado com sucesso.", status = "finished" });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { erro = ex.Message });
+        }
     }
 }

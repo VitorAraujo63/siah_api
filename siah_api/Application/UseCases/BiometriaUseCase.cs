@@ -52,4 +52,18 @@ public class BiometriaUseCase : IBiometriaUseCase
     {
         return false;
     }
+
+    public async Task<ObterTemplateBiometriaResponse?> ObterTemplatePorCpfAsync(string cpf)
+    {
+        var dados = await _biometriaRepository.ObterTemplatePorCpfAsync(cpf);
+
+        if (dados == null)
+            return null;
+
+        return new ObterTemplateBiometriaResponse
+        {
+            TemplateBiometrico = Convert.ToBase64String(dados.Value.Template),
+            Nome = dados.Value.Nome
+        };
+    }
 }

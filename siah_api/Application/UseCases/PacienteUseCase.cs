@@ -25,6 +25,15 @@ public class PacienteUseCase : IPacienteUseCase
         if (cpfExiste)
             throw new InvalidOperationException("CPF já cadastrado na base.");
 
+        var embedding = request.Embedding;
+        if (embedding == null || embedding.Length == 0)
+        {
+            if (!string.IsNullOrWhiteSpace(request.TempFile))
+            {
+                embedding = await _faceEmbeddingService.GerarEmbeddingAsync(request.TempFile);
+            }
+        }
+
         var paciente = new Paciente
         {
             Nome = request.Nome,
@@ -52,7 +61,7 @@ public class PacienteUseCase : IPacienteUseCase
             Parentesco = string.IsNullOrWhiteSpace(request.Parentesco) ? null : request.Parentesco,
             TelefoneResponsavel = string.IsNullOrWhiteSpace(request.TelefoneResponsavel) ? null : request.TelefoneResponsavel,
             Images = request.Images,
-            Embedding = request.Embedding,
+            Embedding = embedding,
             EmbeddingPath = request.EmbeddingPath
         };
 

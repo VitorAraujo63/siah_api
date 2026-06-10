@@ -1,8 +1,6 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SiahApi.Application.DTOs.Medico;
 using SiahApi.Domain.Ports.Input;
-using System.Security.Claims;
 
 namespace SiahApi.Infrastructure.Adapters.Input;
 
@@ -18,7 +16,6 @@ public class MedicosController : ControllerBase
         _medicoUseCase = medicoUseCase;
     }
 
-    // SIAH_Especificacao_API_v1.docx
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<MedicoResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> Listar([FromQuery] MedicoFiltros filtros)
@@ -27,16 +24,14 @@ public class MedicosController : ControllerBase
         return Ok(resultado);
     }
 
-    // SIAH_Especificacao_API_v1.docx
     [HttpGet("favorites")]
     [ProducesResponseType(typeof(IEnumerable<MedicoResponse>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> ListarFavoritos([FromQuery] Guid userId)
+    public async Task<IActionResult> ListarFavoritos([FromQuery] string cpf)
     {
-        var resultado = await _medicoUseCase.ListarFavoritosAsync(userId);
+        var resultado = await _medicoUseCase.ListarFavoritosAsync(cpf);
         return Ok(resultado);
     }
 
-    // SIAH_Especificacao_API_v1.docx
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(MedicoResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -53,7 +48,6 @@ public class MedicosController : ControllerBase
         }
     }
 
-    // SIAH_Especificacao_API_v1.docx
     [HttpGet("{id:guid}/availability")]
     [ProducesResponseType(typeof(DisponibilidadeResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> ObterDisponibilidade(Guid id, [FromQuery] DisponibilidadeFiltros filtros)
@@ -62,7 +56,6 @@ public class MedicosController : ControllerBase
         return Ok(resultado);
     }
 
-    // SIAH_Especificacao_API_v1.docx
     [HttpGet("{id:guid}/reviews")]
     [ProducesResponseType(typeof(IEnumerable<AvaliacaoResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> ObterAvaliacoes(Guid id)
@@ -71,21 +64,19 @@ public class MedicosController : ControllerBase
         return Ok(resultado);
     }
 
-    // SIAH_Especificacao_API_v1.docx
     [HttpPost("{id:guid}/favorite")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> Favoritar(Guid id, [FromQuery] Guid userId)
+    public async Task<IActionResult> Favoritar(Guid id, [FromQuery] string cpf)
     {
-        await _medicoUseCase.FavoritarAsync(userId, id);
+        await _medicoUseCase.FavoritarAsync(cpf, id);
         return Ok(new { mensagem = "Médico adicionado aos favoritos." });
     }
 
-    // SIAH_Especificacao_API_v1.docx
     [HttpDelete("{id:guid}/favorite")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> Desfavoritar(Guid id, [FromQuery] Guid userId)
+    public async Task<IActionResult> Desfavoritar(Guid id, [FromQuery] string cpf)
     {
-        await _medicoUseCase.DesfavoritarAsync(userId, id);
+        await _medicoUseCase.DesfavoritarAsync(cpf, id);
         return Ok(new { mensagem = "Médico removido dos favoritos." });
     }
 }

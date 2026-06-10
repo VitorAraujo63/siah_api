@@ -48,7 +48,13 @@ public class SupabaseAuthRepository : IAuthRepository
     {
         await using var conn = await _dataSource.OpenConnectionAsync();
         await using var cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT id, nome, cpf, senha FROM usuarios WHERE cpf = @cpf LIMIT 1";
+        cmd.CommandText = @"
+            SELECT id, nome, cpf, email, telefone, data_nascimento::text, genero, tipo_sanguineo,
+                   hospital_vinculado, rg, cartao_sus, cnh,
+                   cep, rua, numero, bairro, cidade, estado,
+                   possui_plano_saude, nome_plano, numero_carteirinha, validade_carteirinha::text,
+                   nome_responsavel, parentesco, telefone_responsavel, senha
+            FROM usuarios WHERE cpf = @cpf LIMIT 1";
         cmd.Parameters.AddWithValue("cpf", cpf);
 
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -59,7 +65,29 @@ public class SupabaseAuthRepository : IAuthRepository
             Id = reader.GetGuid(0),
             Nome = reader.GetString(1),
             Cpf = reader.GetString(2),
-            SenhaHash = reader.IsDBNull(3) ? null : reader.GetString(3)
+            Email = reader.IsDBNull(3) ? null : reader.GetString(3),
+            Telefone = reader.IsDBNull(4) ? null : reader.GetString(4),
+            DataNascimento = reader.IsDBNull(5) ? null : reader.GetString(5),
+            Genero = reader.IsDBNull(6) ? null : reader.GetString(6),
+            TipoSanguineo = reader.IsDBNull(7) ? null : reader.GetString(7),
+            HospitalVinculado = reader.IsDBNull(8) ? null : reader.GetString(8),
+            Rg = reader.IsDBNull(9) ? null : reader.GetString(9),
+            CartaoSus = reader.IsDBNull(10) ? null : reader.GetString(10),
+            Cnh = reader.IsDBNull(11) ? null : reader.GetString(11),
+            Cep = reader.IsDBNull(12) ? null : reader.GetString(12),
+            Rua = reader.IsDBNull(13) ? null : reader.GetString(13),
+            Numero = reader.IsDBNull(14) ? null : reader.GetString(14),
+            Bairro = reader.IsDBNull(15) ? null : reader.GetString(15),
+            Cidade = reader.IsDBNull(16) ? null : reader.GetString(16),
+            Estado = reader.IsDBNull(17) ? null : reader.GetString(17),
+            PossuiPlanoSaude = reader.IsDBNull(18) ? false : reader.GetBoolean(18),
+            NomePlano = reader.IsDBNull(19) ? null : reader.GetString(19),
+            NumeroCarteirinha = reader.IsDBNull(20) ? null : reader.GetString(20),
+            ValidadeCarteirinha = reader.IsDBNull(21) ? null : reader.GetString(21),
+            NomeResponsavel = reader.IsDBNull(22) ? null : reader.GetString(22),
+            Parentesco = reader.IsDBNull(23) ? null : reader.GetString(23),
+            TelefoneResponsavel = reader.IsDBNull(24) ? null : reader.GetString(24),
+            SenhaHash = reader.IsDBNull(25) ? null : reader.GetString(25)
         };
     }
 
@@ -111,9 +139,15 @@ public class SupabaseAuthRepository : IAuthRepository
         await using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
             UPDATE usuarios SET
-                nome = @nome, email = @email, telefone = @telefone, data_nascimento = @data_nascimento::date,
-                genero = @genero, cep = @cep, rua = @rua, numero = @numero, bairro = @bairro,
-                cidade = @cidade, estado = @estado
+                nome = @nome, email = @email, telefone = @telefone,
+                data_nascimento = @data_nascimento::date, genero = @genero,
+                tipo_sanguineo = @tipo_sanguineo, rg = @rg, cartao_sus = @cartao_sus, cnh = @cnh,
+                cep = @cep, rua = @rua, numero = @numero, bairro = @bairro,
+                cidade = @cidade, estado = @estado,
+                possui_plano_saude = @possui_plano_saude, nome_plano = @nome_plano,
+                numero_carteirinha = @numero_carteirinha, validade_carteirinha = @validade_carteirinha::date,
+                nome_responsavel = @nome_responsavel, parentesco = @parentesco,
+                telefone_responsavel = @telefone_responsavel
             WHERE id = @id";
 
         cmd.Parameters.AddWithValue("id", paciente.Id);
@@ -122,12 +156,23 @@ public class SupabaseAuthRepository : IAuthRepository
         cmd.Parameters.AddWithValue("telefone", (object?)paciente.Telefone ?? DBNull.Value);
         cmd.Parameters.AddWithValue("data_nascimento", (object?)paciente.DataNascimento ?? DBNull.Value);
         cmd.Parameters.AddWithValue("genero", (object?)paciente.Genero ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("tipo_sanguineo", (object?)paciente.TipoSanguineo ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("rg", (object?)paciente.Rg ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("cartao_sus", (object?)paciente.CartaoSus ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("cnh", (object?)paciente.Cnh ?? DBNull.Value);
         cmd.Parameters.AddWithValue("cep", (object?)paciente.Cep ?? DBNull.Value);
         cmd.Parameters.AddWithValue("rua", (object?)paciente.Rua ?? DBNull.Value);
         cmd.Parameters.AddWithValue("numero", (object?)paciente.Numero ?? DBNull.Value);
         cmd.Parameters.AddWithValue("bairro", (object?)paciente.Bairro ?? DBNull.Value);
         cmd.Parameters.AddWithValue("cidade", (object?)paciente.Cidade ?? DBNull.Value);
         cmd.Parameters.AddWithValue("estado", (object?)paciente.Estado ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("possui_plano_saude", paciente.PossuiPlanoSaude);
+        cmd.Parameters.AddWithValue("nome_plano", (object?)paciente.NomePlano ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("numero_carteirinha", (object?)paciente.NumeroCarteirinha ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("validade_carteirinha", (object?)paciente.ValidadeCarteirinha ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("nome_responsavel", (object?)paciente.NomeResponsavel ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("parentesco", (object?)paciente.Parentesco ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("telefone_responsavel", (object?)paciente.TelefoneResponsavel ?? DBNull.Value);
 
         await cmd.ExecuteNonQueryAsync();
         return paciente;

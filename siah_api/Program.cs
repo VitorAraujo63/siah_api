@@ -14,6 +14,8 @@ builder.Services.AddSwaggerGen(options =>
         Version = "v1",
         Description = "API do Sistema Integrado de Atendimento Hospitalar (SIAH)."
     });
+    options.OperationFilter<SiahApi.Infrastructure.Swagger.AtualizarPerfilExampleFilter>();
+    options.OperationFilter<SiahApi.Infrastructure.Swagger.AtualizarPerfilCompletoExampleFilter>();
 });
 
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -42,7 +44,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseCors();
+app.UseCors("AllowAll");
 app.MapControllers();
 
 app.Run();
